@@ -1,0 +1,1472 @@
+\documentclass[english]{article}
+
+\usepackage{amsmath, amssymb}
+\usepackage{calc}
+
+\setlength{\textwidth}{6in}
+\setlength{\textheight}{9in}
+\setlength{\oddsidemargin}{(\paperwidth - \textwidth)/2 - 1in}
+\setlength{\evensidemargin}{(\paperwidth - \textwidth)/2 - 1in}
+
+
+%Ciselne mnoziny
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\RN}{\R^\N}
+
+%Fonty
+\newcommand{\bd}[1]{\mathbf {#1}}
+\newcommand{\mb}[1]{\mathbb {#1}}
+\newcommand{\mc}[1]{\mathcal {#1}}
+
+%Zkraceni
+\newcommand{\ub}{\underbrace}
+\newcommand{\bs}{\backslash}
+
+%Operace
+\newcommand{\inv}{^{-1}}
+\newcommand{\var}{\hspace{0.1em}\mathrm {var}\hspace{0.1em}}
+\newcommand{\cov}{\hspace{0.1em}\mathrm {cov}\hspace{0.1em}}
+\newcommand{\E}{\mathrm {E}}
+
+%Formatovani
+\newcommand{\ex}[1]{\noindent\textbf{Exercise #1}:}
+\newcommand{\note}[1]{\noindent\textbf{#1}}
+\newcommand{\anki}{(\textbf{ANKI})}
+
+%Pst specific
+\newcommand{\F}{\mathcal F}
+\newcommand{\B}{\mathcal B}
+\newcommand{\casy}{t_1,\dots, t_n}
+\newcommand{\as}[1]{\stackrel {a.s.}{#1}}
+
+\newcommand{\covar}[1]{\langle {#1} \rangle }
+
+\begin{document}
+\subsection*{Lecture 1 (22.2)}
+What we'll do
+\begin{itemize}
+\item Processes with continuous time
+\item Wiener process
+\item Martingales
+\item Ito's stochastic integral
+\item Linear stochastic differential equations
+\item Local martingales
+\end{itemize}
+
+\section{Continuous time processes}
+Fix probability space $(\Omega, \F, P)$. Stochastic process is a set of random variables $\{X_t, t\in I\}$, where $I\subset \R^+ = [0,\infty),\; X_t:(\Omega, F) \to (\R,\B)$ - so we tacitly assume that $(\Omega, \F)$ is rich enough to carry all $X_t$'s. \newline
+Continuous time process: $I$ is interval (usually $[0,T]$) or simply $[0,\infty)$. The set $[0,\infty)$ is linearly ordered and thus $t\in I$ may be interpreted as a time.\newline
+
+\note{Notation}: $X=\{X_t, t\geq 0\}, X=\{X_t, t\in [0,T]\},\dots$ \newline
+
+\noindent $X$ generates two important mappings:
+\begin{itemize}
+\item $X(\omega): \R^+ \to \R, t \to X_t (\omega)$ - the \textbf{trajectory} of X (for fixed $\omega$), also called the \textbf{path}
+\item fix $t: X_t: \Omega \to \R$ - the \textbf{state} of the process at time $T$. It is a measurable map for each $t\geq 0$
+\end{itemize}
+The value $X_t(\omega)$ is the \textbf{realisation} of $X_t$. $X$ can be extended to a map $X_t: \R^+\to \R^d$ (\textbf{vector stochastic process}), or $\R^+ \to E$, an even more general state space. But for us one-dimensional random process is sufficient now. The theory is mostly the same either way. \newline
+
+\noindent $I$ can also be altered, we can take $I=\N$ a \textbf{random sequence}, or we can take $I=\R^2$, a \textbf{random field} (cannot be interpreted as ``time'')\newline
+
+\note{Definition I.1}: We say that $X = \{X_t, t\geq 0\}$ is \textbf{continuous} if the paths of $X$ are continuous almost surely.
+Similarly we define \textbf{right-continuous}, \textbf{non-decreasing}, \textbf{bounded-variation}, \textbf{cadlag} (=right-continuous with left limits, sometimes \textbf{rcll}) ($\iff X_t = \lim_{s \searrow t^+} X_s$ a.s., $\exists \lim_{s\nearrow t^-} X_s$ finite a.s.)\newline
+
+\note{Remark}: Saying that process $X$ is continuous almost surely means that there is a set $N\in \F$, $P(N) = 0$ and $\forall \omega \notin N$, $X(\omega)$ is continuous, but the set $\{\omega: X(\omega) \text{ is continuous }\}$ need not to be measurable - i.e. there is \textit{at most} a null set where the process is not continuous.\newline
+Sometimes the continuity is defined \textbf{for all} paths. We shall discuss the difference later.\newline
+
+\note{Notation}: $\B$ is Borel $\sigma$-algebra on $\R$, $\B^n$ is Borel $\sigma$-algebra on $\R^n$, $\B(E)$ is Borel $\sigma$-algebra on $E$ (usually Polish, i.e. complete separable) \newline
+
+\note{Lemma I.2}: Let $X = \{X_t, t\geq 0\}$ be a stochastic process, then $\forall n\in \N$ and for any set $0\leq t_1 < t_2 < \cdots < t_n < \infty$ is $(X_{t_1}, \dots, X_{t_n})$ random vector, i.e. a Borel measurable map $\Omega \to \R^n$\newline
+\textbf{Proof}: Simple consequence of measurability of $X_t\;\forall t$.\newline
+
+\noindent The set of distributions $(X_{t_1}, \dots, X_{t_n})$, $\forall n\in \N,\; \forall\; 0\leq t_1 < t_n < \cdots < t_n < \infty$ is called the class of \textbf{finite-dimensional distributions} of $X$. \newline
+
+\pagebreak \note{Definition I.3}: Let $X$ and $Y$ be defined on $(\Omega, \F, P)$. We say that \begin{enumerate}
+\item $X$ and $Y$ are \textbf{equivalent} or \textbf{indistinguishable}\footnote{nerozlisitelne}  if $P[X_t = Y_t \;\forall t\geq 0] = 1$
+\item $X$ is a \textbf{modification}\footnote{modifikace} of $Y$ (and vice-versa) if $P[X_t = Y_t] = 1 \;\forall t\geq 0$ 
+\end{enumerate}
+
+\note{Remark}: If $X$ is equivalent to $Y$, then $X$ is a modification of $Y$ and if $X$ is a modification of $Y$ then $X$ and $Y$ have the same class of finite-dimensional distributions. $X$ and $Y$ may have the same finite-dimensional distributions even when defined on different probability spaces, since they are defined on $\R^n$, not on $\Omega$ \newline
+
+\note{Theorem I.4}: Let $X$ and $Y$ be continuous stochastic processes. If $X$ is a modification of $Y$, then $X$ and $Y$ are equivalent.\newline
+\textbf{Proof}: We know that $P(\{w: X_t(\omega) = Y_t(\omega)\}) = 1$ $\forall t\geq 0$. Take $N_q = \{\omega: X_q(\omega) \neq Y_q(\omega)\}$ and $P(N_q)=0$. Define.
+$$N_{\Q} = \bigcup_{q\in \Q} N_q = \{\omega: X_q(\omega) \neq Y_q (\omega) \text{ for some }q \in \Q\}$$
+$P(N_\Q)=0$. For $\omega \in N^C_{\Q}$ it holds $\{X_q(\omega) = Y_g(\omega) \; \forall q \in \Q\}$ \newline
+Take $N_X,\; P(N_X)=0,\; N_Y, \; P(N_Y) = 0$ such that $\forall \omega \in N^C_X: \{X_t(\omega) = \lim_{q\to t, q\in \Q} X_q(\omega), \; \forall t\geq 0\}$ and $\forall \omega \in N^C_Y: \{Y_t(\omega) = \lim_{q\to t, q\in \Q} Y_q(\omega),\; \forall t\geq 0\}$. Define $A = (N_\Q \cup N_X \cup N_Y)^C \Rightarrow P(A) = 1$\newline
+$$\forall \omega \in A: \; P[X_t = Y_t, \forall t \geq 0] = P[X_t = \lim X_q = \lim Y_q = Y_t\; \forall t\geq 0] = 1$$
+QED\newline
+
+If $X$ is a continuous process and $Y$ is equivalent to $X$ and $Y$ is also continuous.\newline
+\note{Remark} Theorem I.4 holds also under the assumption of right-continuity of trajectories of $X$ and $Y$. \newline
+
+\note{Example}: $\Omega = [0,1], X_t(\omega) \equiv$ 0, $Y_t(\omega) = I_{\{t=\omega\}}, P =$ Lebesgue on $[0,1]$
+$$P[X_t = Y_t] = P[t\neq \omega] = 1 \; \forall t\geq 0 \;\; X\text{ is a modification of } Y$$
+but
+$$P[X_t(\omega) = Y_t(\omega) \; \forall t\in [0,1] ] = P[\omega \notin [0,1]] = 0 \;\; X \text{ and } Y \text{ are not indistinguishable}$$ 
+
+\note{Example}: $X_t(\omega) = I_{[t\leq \omega]}$, $Y_t(\omega) = I_{[t<\omega]}$ we have $\forall \omega:\; X_\omega(\omega) = 1 \neq 0 = Y_w(\omega)$. $X$ is then a modification of $Y$ but they are not indistinguishable. \newline
+
+Finite-dimensional distributions of $X$ are the basis for the distribution of $X$. We have $X:\Omega \to \R^{\R^+}$ (the space of all maps $\R^+ \to \R$ \anki). We want to look at $P_X(B) = P(X^{-1}(B))$, but the problem that $B$ would be from this too-big set where it is difficult to even define open sets properly. Instead we have $P_{X_{t_1}, \dots, X_{t_n}} (B) = P((X_{t_1}, \dots, X_{t_n}) \in B),\; B\in \B^n$. \newline
+We define the finite-dimensional cylinder: $\{x: (x(t_1), \dots, x(t_n)) \in B\}, \; B\in \B^n$ \newline
+Finite-dimensional cylinders form an algebra of subsets of $\R^{[0,\infty]}$\newline
+We want to prove that the fin-dim. cylinders on $C[0,1]$ generate also the Borel $\sigma$-algebra. \newline
+
+\note{Definition I.5}: The $\sigma$-algebra on $C[0,1]$ generated by all sets of the form $\{x \in C[0,1]; x(t) \in B\}$, $t\in [0,1],\; B\in \B$ is called \textbf{cylindrical sigma algebra} and denoted $\Sigma(C[0,1])$ \newline
+
+\note{Lemma I.6}: $\Sigma(C[0,1]) = \B ( C[0,1])$\newline
+\textbf{Proof}: Take set of the form $\{x \in C[0,1]; x(t) \in B \},\; B\in \B, \; t\in[0,1]$\newline
+The map $\pi_t: C[0,1] \to \R$, $\pi_t(x) = x(t)$ (projection to $t$-coordinate) is continuous and hence Borel measurable.
+$$\{x \in C[0,1]; x(t) \in B\} = \pi_t^{-1} (B) \in \B(C[0,1])$$
+From that we obtain $\Sigma(C[0,1]) \subset \B (C[0,1])$\newline
+
+\noindent Reverse: We take closed ball in $C[0,1]$, those generate $\B(C[0,1])$, can be written in the form
+$$\{y: |y(t) - x(t)| \leq r\; \forall t\} = B_r(x)$$
+$\sup_{t\in [0,1]} |y(t) - x(t)| \leq r$
+$$\{y : \sup_t |y(t) - x(t)| \leq r \} = \{y: \sup_{q\in \Q\cap [0,1]} |y(q) - x(q)| \leq r\}= \bigcap_{q\in \Q\cap [0,1]} \{y \in C[0,1]; y(q) \in [x(q) - r, x(q) + r]\} \in \Sigma(C[0,1])$$
+Because the last is a countable intersection of cylindrical sets. Since they generate the Borel sigma algebra, we get $\B(C[0,1]) \subset \Sigma(C[0,1])$
+
+\subsection*{Lecture 2 (23.2)}
+The fact that $\Sigma(C[0,1]) = \B(C[0,1])$ allows us to consider continuous stochastic process as a random variable with values in $C[0,1]$ \newline
+
+\note{Theorem I.7}: If $X$ is a continuous stochastic process on $[0,1]$, then $X$ is a random variable (Borel measurable) $X:(\Omega, \F) \to (C[0,1], \B(C[0,1]))$ \newline
+\textbf{Proof}: We need to prove measurability of $X$, i.e. $X^{-1} (B) \in \F \;\forall B\in\B(C[0,1])$
+$$\mathcal X = \{B\subset C[0,1]; X^{-1}(B) \in \F\}$$
+is a $\sigma$-algebra on $C[0,1]$. \newline
+All finite-dimensional cylinders are in $\mathcal X$: take $C\in\B,\; C_t = \{x \in C[0,1],\; x(t)\in C\}$ - this is a finite dimensional cylinder.
+$$X^{-1}(C_t)=\{ \omega: X_t(\omega) \in C \}\in \F \text{ since } X_t \text { is a random variable }$$
+Therefore $\B(C[0,1]) = \Sigma(C[0,1]) \in \mathcal X$ \newline
+QED \newline
+
+We may use canonical probability space $(\Omega, \F) = (C[0,1], \B(C[0,1]))$ and $X(\omega) = \omega$ and now we need to specify a probability measure on $\B(C[0,1])$.\newline
+It is possible to extend I.7 and I.6 from $[0,1]$ to $[0,\infty)$ in a straightforward way. $C[0,\infty)$ equipped with local uniform convergent metric
+$$\rho(x,y) = \sum^\infty_{n=1} 2^{-n} (1\wedge \sup_{t\leq n} |x(t) - y(t)|)$$
+is a complete metric space and I.6 may be proved for $C[0,\infty)$\newline
+
+\noindent Distribution of the stochastic process $X$. \newline
+Recall the example $X\equiv 0$, $Y=I_{[t=\omega]}, \Omega = [0,1],\; \F=\B$, $P$ is a Lebesgue measure. Finite dimensional distributions of $X$ and $Y$ are the same. $X$ is a modification of $Y$. But we have $X\in C[0,1], Y\notin C[0,1]$. The ``distributions'' of $X$ and $Y$ are not the same, ``$P(X\in C[0,1])=1$'', ``$P(Y\in C[0,1])=0$''. The process $X(Y)$ cannot be fully characterised by its finite-dimensional distributions.\newline
+Note that
+$$P((X_{t_1}, \dots, X_{t_n}) = (0,\dots, 0)) = P((Y_{t_1}, \dots, Y_{t_n})=0) = 1 \;\; \forall n\in \N\; \forall 0\leq t_1<\dots t_n \leq 1$$
+But if $X$ is continuous then the finite-dimensional distributions are sufficient to describe the distribution $P_X$ of $X$. $P_X$ is a probability measure on $\B(C[0,1])$. We know
+$$P_X(B) = P(X\in B) = P(X^{-1} (B))\quad B\in\B(C[0,1])$$
+The question now: does there exist a probability measure on an infinite dimensional space $R^{[0,\infty)}$ with given finite-dimensional distributions? \newline
+Secondly: if yes, then can this measure be modifed to a measure on $\B(C[0,1])$? \newline
+
+\note{Definition I.9} Let $\mathcal P = \{P_{t_1,\dots, t_n},\; 0\leq t_1 < t_2 < \cdots < t_n < \infty,\; n\in \N\}$ be a class of probability distributions, $P_{t_1,\dots, t_n}$ is some probability measure on $\R^n$. $\mathcal P$ is called a \textbf{consistent system of finite-dimensional distributions} if for any $n,\; 0\leq t_1<t_2 < \cdots < t_n < \infty$ and for all $\{s_1,\dots, s_k\}\subset \{t_1, \dots, t_n\}$, $0\leq s_1 < \cdots < s_k < \infty$, the distribution $P_{s_1,\dots, s_k}$ is the marginal distribution of $P_{t_1, \dots, t_n}$.\newline
+
+\note{Example}: $Q$ be a probability measure on $\R$, $P_{t_1,\dots, t_n} = \ub{Q\otimes Q \otimes \cdots \otimes Q}_{n-times}$ (independence), then $\mathcal P$ is consistent.\newline
+
+\note{Theorem I.10. (Daniell-Kolmogorov)} Let $\mathcal P$ be a consistent system of finitely dimensional distributions (as in I.9) then there exists a unique probability measure $P$ on $\R^{[0,\infty)}$ such that 
+$$P_{t_1,\dots, t_n} (B) = P(\pi^{-1}_{t_1,\dots, t_n}(B)) \quad \forall n\in \N,\; \forall 0\leq t_1<t_2<\cdots <t_n < \infty$$
+where $\pi_{t_1,\dots, t_n}$ is a projection $\R^{[0,\infty)} \to \R^n$ such that for $x\in \R^{[0,\infty)}$ $\pi_{t_1, \dots, t_n}(x) = (x_{t_1},\dots , x_{t_n})$, i.e. $P_{t_1,\dots, t_n}$  are finite-dimensional marginals of $P$.  \newline
+\textbf{Proof:} in any textbook of Prbability.\newline
+
+Theorem I.10 ensures that there exists a stochastic process $X: \Omega \to \R^{[0,\infty)}$ such that $P((X_{t_1}, \dots, X_{t_n}) \in C)$ is given by $P_{t_1,\dots, t_n}(C) \; \forall n\in \N,\; \forall 0\leq t_1 < t_2 < \cdots <t_n < \infty,\; \forall C \in \B(\R^n)$. The distribution $P_X$ (on $\Sigma(\R^{[0,\infty)})$) is the ``P'' of I.9, called the \textbf{projective limit} of the system $\mathcal P$. \newline
+Theorem I.10 says nothing about the continuity of its paths.\newline
+Any probability measure on a complete separable metric space $E$ is tight\footnote{Look at Arzela-Ascoli theorem for characterisation of compact sets in $C[0,1], C[0,\infty)$}, i.e. $\forall \epsilon > 0\; \exists K_\epsilon$ a compact subset of $E$ such that $P(K_\epsilon) \geq 1-\epsilon$ \newline
+There are some results on sufficient conditions for the existence of continuous modifications. The most celebrated is:\newline
+
+\note{Theorem I.14. (Kolmogorov-Chencov)} Let $X$ be a stochastic process on $[0,\infty)$. $X = \{X_t ; t\geq 0 \}$. If there are constants $\alpha > 0, \beta > 0$ and $N>0$ such that 
+$$E|X_t - X_s|^\alpha \leq N|t-s|^{1+\beta}\quad \forall s,t$$
+then there exists a continuous modification of $X$.\newline
+
+i.e. the existence of $X$ with given finite-dimensional distributions is ensured by Daniell-Kolmogorov theorem $I.10$. Then $I.14$ ensures the existence of $Y$ such that
+$$P(X_t = Y_t) = 1 \;\; \forall t \quad (\Rightarrow X \text{ and } Y \text{ have the same finite-dimensional distributions})$$
+and $Y$ is a continuous process.\newline
+
+\note{Example:} $P_{t_1,\dots, t_n} = Q\otimes \cdots \otimes Q \; \stackrel{I.10}\Rightarrow $ there exists a process $X=\{X_t, t\in [0,1]\}$ such that $X_t \sim Q\; \forall t$ and $X_t, X_s$ are independent $\forall s\neq t$, then
+$$E|X_t - X_s|^\alpha = \text{ constant independent on s,t}$$
+the condition $E|X_t - X_s|^\alpha \leq N|t-s|^{1+\beta}$ cannot hold for all $t,s$. In this case, I.14 does not apply. (and in fact there is no continuous modification of the process) \newline 
+For example if $Q\sim Alt(0,1)$, $Q(1)=Q(0) = 1/2$ \newline
+
+\note{Definition I.15 (Gaussian process)} A process $X=\{X_t, t\geq 0 \}$ is called \textbf{Gaussian} if all finite-dimensional distributions of $X$ are multivariate normal.\newline
+
+\note{Recap}: That means $\forall t_1,\dots, t_n,\; X_{t_1},\dots, X_{t_n} \sim N_n (\mu, \Sigma)$, $\mu=(\mu_{t_i})^n_{i=1}$, $\Sigma = (\sigma_{t_i t_j})^n _{i=1, j=1}$ is positive semidefinite. \newline
+Random vector $(U_1, \dots, U_n)$ has multivariate normal distribution $N_n(\mu, \Sigma)$ if and only if $\forall (c_1,\dots, c_n)\in \R^n$ the random variable $cU^T$ follows $N_n(c\mu^T, c \Sigma c^T)$. \newline
+Marginal distribution of normal distribution is again normal. \newline
+Take function $\mu: [0,\infty) \to \R,\; \sigma: [0,\infty)\times [0,\infty) \to \R$ such that $\sigma$ is a positive-semidefinite function. Then $\mu$ and $\sigma$ define a consistent system of finite-dimensional normal distributions, because $\forall\casy$ the matrix $(\sigma_{t_i t_j})^n_{i,j=1}$ is positive semidefinite and marginal distribution of $N_n \Big((\mu_{t_i})^n_{i=1}, (\sigma_{t_i t_j})^n_{i,j=1} \Big)$ at $s_1, \dots, s_k$ is $N_k\Big((\mu_{s_i})^k_{i=1}, (\sigma_{s_i s_j})^k_{i,j=1}\Big)$.
+
+\subsection*{Lecture 3 (23.2)}
+\note{Theorem I.16} Let $\mu:[0,\infty)\to \R$ be a function, $\sigma:[0,\infty)\times [0,\infty) \to \R$ be a positive semimdefinite function. Then there exists a Gaussian process with mean value function $\mu$ and covariance structure $\sigma$. \newline
+\textbf{Proof}: A direct application of I.10. \newline
+
+The most important Gaussian process is the so-called Wiener process (Brownian motion). In 1828, R. Brown observed random fluctuations in his microscope. 1900 L. Bachelier studied random fluctuations on financial markets. 1905 Albert Einstein used it to prove atoms. 1923 N. Wiener produced the mathematical description for it.\newline
+
+\note{Definition I.17}: \textbf{Wiener process} is continuous Gaussian process with mean value function $\mu \equiv 0$ (centered) and covariance structure $\sigma(s,t) = \min \{s,t\}:=s\wedge t$. \newline
+
+It is not difficult to prove that $\sigma(s,t) = s\wedge t$ is positive definite, i.e. distribution of $(W_s, W_t) \sim N_2 ( 0 , \begin{pmatrix} s & s \\ s & t \end{pmatrix} )$ for any $0< s <t$ and theorem I.16 may be directly applied. For the continuity, apply I.14\newline
+$E|X_t - X_s|^\alpha,\;  s<t$. What is the distribution of $X_t - X_s$? It is normal with zero mean and 
+$$\var (W_t - W_s) = \var W_t + \var W_s - 2\text{cov} (W_t, W_s) = t+ s - 2s = t-s$$
+e.g.
+$$E|X_t - X_s| = \text{const} |t-s|^{1/2},\; \beta= -\frac 12$$
+$$E(X_t - X_s)^2 = |t-s|,\; \beta = 0$$
+$$E(X_t - X_s)^4 = 3(t-s)^2,\; \alpha = 4, \beta = 1$$
+that is ok, thus there (thanks to I.14) exists a continuous modification of $W$ which is called the Wiener process. Also thanks to 
+$$E(W_t -W_s)^{2k} = (2k-1)(2k-3) \cdots 3 \cdot (t-s)^k,\;\; \alpha = 2k, b= k-1, \; \frac{\beta}{\alpha} = \frac 12 - \frac 1{2k}\; \forall k$$
+We have the trajectories (paths) of $W$ being (locally?) $\gamma$-Hölder continuous for all $\gamma \in (0,1/2 )$\newline
+
+For continuous processes we have distribution $P_X$ on $\B(C[0,\infty))$. We have $P_W$ on $\B(C[0,\infty))$ for which any finite-dimensional marginal is $N_n(0, (t_i \wedge t_j)^n_{i,j=1})$ \textbf{Wiener measure}.\newline
+Path regularity of Wiener process: $W(\omega)$ is a continuous function for (almost) all $\omega$. We have: \newline
+
+\note{Theorem I.18 (Chencov)} If $X=\{X_t, t\geq 0\}$ is a stochastic process such that  $E|X_t - X_s|^\alpha \leq N|t-s|^{1+\beta}$ for some $\alpha > 0, \beta > 0, N>0$ and for all s,t. then there exists a locally $\gamma$-Holder continuous modification of $X$ for any $0<\gamma < \frac{\beta}{\alpha}$ \newline
+\textbf{Proof}: Too long to do in the lecture\newline
+
+\note{Remark}: \textbf{Modulus of continuity}: Take $f$ continuous function and take e.g. $[0,1]$. 
+$$w(\delta) = \sup_{0\leq s <t \leq 1, |s-t|\leq \delta} |f(t) - f(s)|$$
+Obviously $w(\delta) \to 0$ as $\delta \to 0$, but we want to study the order of this convergence? This notion is somewhat connected to the Holder continuity and also to the existence of the derivative. For example, we can have
+$$\frac{w(\delta)}{\delta} \to \infty,\quad \frac{w(\delta)}{\sqrt \delta} \to 0$$
+Which would mean that probably there is not a derivative of $f$. \newline
+
+\note{Theorem I.19} Let $W=\{W_t, t\in [0,1]\}$ be a Wiener process. Then for $0 < \epsilon < 1/2$ and for almost all trajectories exists $n>0$ such that
+$$\sup_{0\leq s<t\leq 1, |s-t| \leq 2^{-n}} \frac{|W_t(\omega) - W_s (\omega)|}{|t-s|^{1/2 - \epsilon}} \leq N$$
+where $N$ depends on $\epsilon$. In particular
+$$\sup_{0\leq s \leq 2^{-n}} |W_s (\omega) | \leq N\cdot s^{1/2-\epsilon}$$
+here $n$ depends on $\omega$ \newline
+
+\note{Random shizzle who knows what this is (wasn't in the class)}
+for almost all $\omega \in \Omega$ \newline
+$\exists n(\omega),\; \omega w(2^{-n}) \leq N(\epsilon)|t-s|^{1/2-\epsilon}$\newline
+$$\sup_{0\leq s \leq 2^{-n}} |W_s| \leq N\cdot s^{1/2-\epsilon}$$
+pathwise independent: $n=n(\omega)$
+$$P(|W_s|> K) > 0 \; \forall s>0 \forall K$$
+$$\sup_{0\leq s \leq 2^{-n(\omega)}} |W_s(\omega) | \leq N(\epsilon) s^{1/2 - \epsilon}$$
+
+\note{Theorem I.20 (Levy modulus of continuity)} Let $W=\{W_t, t\in [0,1]\}$ be a Wiener process. Then for almost all trajectories it holds.
+$$\overline{\lim_{\epsilon\to 0^+}} \sup_{0\leq s < t \leq 1, |t-s| \leq \epsilon} \frac {|W_t - W_s|}{\sqrt{2\epsilon \log \frac 1\epsilon}} =  1$$
+
+\note{Theorem I.21 (Law of iterated logarithm)} Let $W=\{W_t, t\geq 0\}$ be a Wiener process. Then
+$$\limsup_{t\to 0^+} \frac{W_t}{\sqrt {2t \log \log 1/t}} = \limsup_{t\to \infty} \frac{W_t}{\sqrt{2t \log \log t}} = 1 \quad a.s.$$
+$$\liminf_{t\to 0^+} \frac{W_t}{\sqrt {2t \log \log 1/t}} = \liminf_{t\to \infty} \frac{W_t}{\sqrt{2t \log \log t}} = 1 \quad a.s.$$
+The second one can be seen from the symmetry of the centered Gaussian process. \newline
+
+\note{Remark}: How to see the iterated logarithm
+$$e;\quad \log e = 1; \quad \log \log e = 0$$
+$$e^{e^{10}}; \quad \log e^{e^{10}} = e^{10}; \quad \log \log e^{e^{10}} = 10$$
+
+\note{Definition - alternative}: Often we may use an alternative definition of the Wiener process. It is a stochastic process such that \begin{enumerate}
+\item $W_0 = 0$ a.s.
+\item Distribution of $(W_t - W_s)$ is $N(0,t-s) \; \forall 0\leq s < t$
+\item For any $0\leq s_1 < t_1 \leq s_2 < t_2 \leq s_3 < t_3 \dots$ the random variables $(W_{t_k} - W_{s_k}), \; k=1,2,\dots$ are independent (independent increments)
+\item $W$ has continuous trajectories
+\end{enumerate}
+This definition is equivalent with the previous definition.
+\subsection*{Lecture 4 (7.3) }
+The Wiener process has no derivatives at any point with probability 1. \newline
+$f$ has a derivative if
+$$\lim_{h\to 0} \frac{f(x+h) - f(x)}{h},\;\; x\in (-\infty, \infty)$$
+But the left and right limits need not exist. It is however always possible to study
+$$\limsup_{h\to 0^+} \frac{f(x+h) - f(x)}{h},\quad \liminf_{h\to 0^-} \frac{f(x+h) - f(x)}{h}$$
+
+\note{Definition (Dini's derivatives)}
+$$D^+(f,t) = \limsup_{h\to 0+}  \frac{f(x+h) - f(x)}{h},\quad\quad D^- (f,t) = \limsup_{h\to 0-}  \frac{f(x+h) - f(x)}{h}$$
+$$D_+ (f,t) = \liminf_{h\to 0+}  \frac{f(x+h) - f(x)}{h},\quad\quad D_- (f,t) = \liminf_{h\to 0-}  \frac{f(x+h) - f(x)}{h}$$
+
+\note{Theorem I.22}. The path of the Wiener process is not differentiable at any $t\in [0,1]$ with probability 1 \newline
+\note{Proof}: That is $\exists N \in \mathcal F,\; P(N)=0$ and $\forall \omega \notin N:\; W(\omega)$ is not differentiable $\forall t\in[0,1]$ \newline
+Denote 
+$$N_D^C = \{\omega,\; \forall t\in [0,1),\; D^+(W(\omega),t) = +\infty \vee D_+(W(\omega),t) = -\infty \}$$
+$$N_D = \{\omega,\; \exists t\in [0,1),\; D^+(W(\omega),t) < +\infty \text{ and } D_+(W(\omega),t) < -\infty \}$$
+We prove that there is $F\in\F, P(F)=0,\l N_D\subset F$
+$$N_d = \bigcup_{t\in [0,1)} \{ \omega, -\infty < D_+(W(\omega), t) \leq D^+ (W(\omega),t) < +\infty \}$$
+$-\infty < D_+(W(\omega), t) < +\infty \iff \Big| \frac{W_{t+h}(\omega) - W_t (\omega)}{h} \Big| \leq J \;\; \exists J\in\R \; \exists h(\omega)\in\R:\; \forall h<h(\omega)$ and similarly for $D^+$.
+$$\bigcup_{t\in[0,1)} \bigcup_{k\geq 1} \bigcup_{j \geq 1} \bigcap_{h<1/k} \bigg\{ \omega; \Big| \frac{W_{t+h}(\omega) - W_t(\omega)}{1} \Big| \leq jh \bigg\} = \bigcup_{k\geq 1} \bigcup_{j\geq 1} A_{jk}$$
+Next we will show that $\forall A_{jk} \exists B_{jk} = 0\; (A_{jk} \subset B_{jk})$ \;
+Take $\omega \in A_{jk}$ and a partition $\{i/n\}^{n-1}_{i=0}$ for $n > 4k$. For a given $t \in [0,1)$ find $i$ satisfying $\frac {i-1}n \leq t < \frac in < \frac{i+1}n < \cdots < \frac {i+3}n < 1 < t+ \frac 1k$ \newline
+Therefore for $\omega \in A_{jk}$
+$$\Big| W_{\frac{i+1}n}(\omega) - W_{\frac in} (\omega) \Big| \leq \Big| W_{\frac{i+1}n}(\omega) - W_{t}(\omega) \Big| + \Big| W_{\frac in}(\omega) - W_t(\omega)\Big| \leq j \frac 2n + j \frac 1n \leq \frac{3j}n$$
+%def I.9 why are the times increasing
+%vztahy sigma(X_1,\dots, X_n) \subset a meritelnosti X_n
+Similarly
+$$\Big| W_{\frac{i+2}n}(\omega) - W_{\frac {i+1}n} (\omega) \Big| \leq \Big| W_{\frac{i+2}n}(\omega) - W_{t}(\omega) \Big| + \Big| W_{\frac {i+1}n}(\omega) - W_t(\omega)\Big| \leq  \frac{5j}n$$
+$$\Big| W_{\frac{i+3}n}(\omega) - W_{\frac {i+2}n} (\omega) \Big|  \leq  \frac{7j}n$$
+Those are independent increments. Denote the $i$-th increment $\Psi(i)$. For $\omega\in A_{jk}$, denote 
+$$B_{jk} = \{\omega;\; \exists i \Psi(i) \} = \bigcup^n_{i=1} \{ \omega; \Psi(i)\}$$
+$$P(B_{jk}) = P \Big( \bigcup^n_{i=1} [ \Psi ] \Big) \leq \sum^n_{i=1} P(\Psi(i)) = \sum^n_{i=1} P(|Z_1| \leq \frac {3j}{\sqrt n}, |Z_2| \leq \frac{5j}{\sqrt n}, |Z_3| \leq \frac{7j}{\sqrt n})$$
+Where
+$$P(|Z_1| \leq c) = \int^c_{-c} \frac {1}{\sqrt {2\pi}} e^{-x^2/2} dx \leq \frac{2c}{\sqrt {2\pi}} \leq c$$
+since $Z_i \stackrel{iid}\sim N(0,1)$.
+$$\sum^n_{i=1} \frac{105j^3}{(\sqrt n)^3} = \frac{105j^3}{\sqrt n}$$
+Thus
+$$P(B_{jk}) \leq \frac{105j^3}{\sqrt n} \to 0 \;\; \forall n > 4k$$
+Moreover $A_{jk} \subset B_{jk} \Rightarrow P(A_{jk})=0$ and we have a complete measure. Lastly $N_D \subset \bigcup_{j\geq 1}\bigcup_{k\geq 1} B_{jk} =0$ \newline
+QED \newline
+
+Recall that $X_t : (\Omega, \F) \to (\R, \mathcal B(\R))$, there is $\sigma(X_t)$ which may be smaller than $\F$ \newline
+\note{Definition I.24}. Let $X_{t\geq 0}$ be stochastic process. Denote $\F^X_t = \sigma(X_s, s \leq t)$ the smallest $\sigma$-algebra w.r.t. which $X_s$ is $\F^X_t$-measurable $\forall s\leq t$. $\{\F^X_t, t\geq 0\}$ is the canonical filtration of $X$.\newline
+
+\note{Remark}: We have $\F^X_s \subset \F^X_t$, $\F^X_t \leq \F$, if $X=\text{const}$. almost surely then $\F^X_0=\{\emptyset, \Omega\}$. For all $A\in \F^X_s$ we know that $s$ whether $A$ has occured or not. \newline
+$\F^X_\infty = \sigma(X_s, s\geq 0)$ \newline
+
+\note{Definition I.25}: Let $(\Omega, \F, P)$ be a probability space and $\{\F_t, t\geq 0\}$ $\sigma$-algebra satisfying $\forall s\leq t$ $(\F_s \subset \F_t \subset \F)$ is called a \textbf{filtration} of $\F$. \newline
+
+\note{Definition}: $\{X_{t\geq 0}\}$ is called \begin{itemize}
+\item[a)] \textbf{Adapted} to $\{\F_t\}$ if $X_t$ is $\F_t$-measurable $\forall t\geq 0$
+\item[b)] \textbf{Measurable} if $(\omega, t)\mapsto X_t(\omega)$ is $\F \otimes \B(\R)$ measurable
+\item[c)] $\F_t$\textbf{-progressively measurable} ($\F_t$-progressive), if $\forall T\geq 0$, $X: \Omega \times [0,T] \to \R: (\omega, t) \mapsto X_t(\omega)$ is $\F_T\times \B(\R)$-measurable.
+\end{itemize}
+
+\note{Remark}: \begin{itemize}
+\item[a)] Every process is $\F^X_t$-adapted (the smallest such $\sigma$-algebra)
+\item[b)] $\{(\omega, t) \in \Omega \times [0,\infty), X_t(\omega \leq a)\} \in \F\otimes \B(\R)\; \forall a\in \R$
+\item[c)] $\{(\omega, t) \in \Omega \times [0, T], X_t(\omega) \leq a\} \in \F_T \times \B([0,T]) \; \forall a\in \R, T\geq 0$. If $X$ is $\F_t$-progressive $\Rightarrow X$ is $\F_t$-adapted and measurable.
+\end{itemize}
+
+\subsection*{Lecture 5 (8.3)} 
+\note{Theorem I.27}: Let $X = \{X_t, t\geq 0\}$ is a continuous stochastic process. Then $X$ is measurable. \newline
+\note{Remark}: The set of $\omega$'s such that $X(\omega)$ is continuous needs not to be measurable. We will discuss this technical problem later. \newline
+\note{Proof}: For $\omega$ take $X^n_t(\omega) = X_{i/n}(\omega)$ where $t\in \Big( \frac in, \frac {i+1}n]$ (it is piecewise constant process). $X(\omega)$ is for almost all $\omega$'s continuous, then $X^n_t(\omega) \to X_t (\omega)$ for a.e. $\omega$. \newline
+Now we want to prove that $\{(\omega ,t), X_t(\omega) \leq a \} \in \F \otimes \mathcal B$ for all $a$ \newline
+We show that $\{(\omega, t), X^n_t(\omega) \leq a \} \in \F \otimes \mathcal B \;\forall n \in \N \;\forall a$.
+$$\{(\omega, t); X^n_t (\omega) \leq a\} = \ub{\{ \omega_i, X_0(\omega) \leq a\}}_{\in \F} \times \ub{\{0\}}_{\in \mathcal B} \cup \ub{\bigcup^\infty_{i=1} \{\omega: X_{i/n} (\omega) \leq a \}}_{\in \F} \times \ub{\Big( \frac{i-1}n, \frac in \Big]}_{\in \mathcal B}$$
+Hence $X^n$ is measurable $\forall n$, $X$ is (a.s.) limit of $X^n$, then $X$ is also measurable. \newline
+
+The problem of possibly nonmeasurable set of continuous paths: \newline
+\textbf{1)} There exists a measurable modification of $X$. $X$ is continuous $\Rightarrow N\in \F: \; \omega \notin N,\; X(\omega)$ is continuous, $P(N) = 0$. $Y(\omega) = X(\omega) \; \forall \omega \notin N$, $Y(\omega) \equiv 0,\; \omega \in N$. $Y$ is a modification of $X$ and has ALL paths continuous. Then using the same argument as in the proof we get that $Y$ is measurable without the measurability problem. \newline
+\textbf{2)} Completness: define 
+$$\mathcal N = \{ A \subset \Omega, \exists N \in \F, P(N) = 0, A\subset N\}$$
+We call $\mathcal N$ \textbf{P-null sets}. $\F^0 = \sigma(\F \cup \mathcal N)$, $\F^0$ is a $\sigma$-algebra which contains all $P$-null sets. $X$ is a continuous process on $(\Omega, \F^0, P^0)$ (a completed probability space) where $P^0$ is the extension of $P$ from $\F$ to $\F^0$, then the set $D_X$ o discontinuous trajectories is measurable. \newline
+$X^n_t(\omega) \to X_t (\omega)\; \forall \omega \notin D_X$
+$$\{(\omega, t), X_t(\omega) \leq a\} = \ub{\{(\omega, t), X_t (\omega) \leq a\} \cap D^C_X}_{\F^0 \otimes \mathcal B} \cup \ub{\{(\omega, t), X_t (\omega) \leq a\} \cap D_X}_{\F^0 \otimes \mathcal B} $$ 
+
+\note{Theorem I.28}: If $X = \{X_t, t\geq 0\}$ is an $\F_t$-adapted continuous process, then $X$ is $\F_t$-progressively measurable. \newline
+\textbf{Proof}: Fix $T>0$. We want to show that $X:\Omega \times [0,T] \to \R$ is $\F_T \otimes \mathcal B[0,T]$ measurable $\forall T>0$. We will now make a slightly different approximation as in the last theorem.
+$$\text{Fix }T>0:\; X^n_t(\omega) = X_{\frac {i+1}{2^n} T} (\omega) \; \text{ for }t\in [0,T], \; \frac i{2^n}T < t \leq \frac{i+1}{2^n} T,\; i=-1,\dots, 2^n-1$$ 
+$X^n_t \to X_t$ for almost all $\omega$.
+$$\{(\omega, t) \in \Omega \times [0,T], X^n_t (\omega) \leq a \}= $$ $$= \ub{\{\omega: X_0 \leq a\}}_{\in \F_0 \subset \F_T} \times \ub{\{0\}}_{\B[0,T]} \cup \bigcup^{2^n-1}_{i=0} \ub{\{\omega; X_{\frac {i+1}{2^n}T} (\omega) \leq a \}}_{\F_{\frac{i+1}{2^n} T} \subset \F_T} \times \ub{\Big(\frac i{2^n}T, \frac{i+1}{2^n} T \Big]}_{\B[0,T]} \in \F_T \otimes \B[0,T]$$
+$X^n_t : \Omega \times [0,T] \to \R$ is $\F_T \otimes \B[0,T]$ measurable. \newline
+$\Rightarrow$ $X_t : \Omega \times [0,T] \to \R$ is $\F_T \otimes \B[0,T]$ measurable. \newline
+Weiener process is continuous, hence it is measurable. \newline
+Wiener process $W$ is $\F^W_t$-adapted, hence $\F^W_t$-progressive.\newline
+Take $\mathcal G$ some $\sigma$-algebra and $\F_t = \sigma(\mathcal G \cup \F^W_t)$, $\F_t$ is again a filtration. \newline
+$W_t$ is $\F_t$-measurable $\forall t \Rightarrow W_t$ is $\F_t$-adapted. We love exponentials we love exponentials. \newline
+\vspace{-0.44cm}
+$$\text{we love exponentials we love exponentials we love exponentials we love exponentials we love exponentials we love exponentials we love exponentials}$$
+But: For the canonical filtration $\F^W_t$ we have $W_t -W_s$ is independent on $\F^W_s$. \newline
+If we have the filtration $\{\F_t\}$ $(\Omega, \F, \{\F_t\}, P)$ filtered probability space, e.g. $\F_t = \sigma(\mathcal G \cup \F^W_t)$ then $W_t -W_s$ needs not to be independent on $\F_s$\newline
+
+\noindent We call process $X=\{X_t, t\geq 0\}$ $\F_t$-Wiener process, if \begin{enumerate}
+\item[(i)] $X$ is a Wiener process 
+\item[(ii)] $X$ is $\F_t$-adapted (hence $\F^X_t \subset \F_t \forall t\geq 0$)
+\item[(iii)] $X_t - X_s$ is independent on $\F_s$
+\end{enumerate}
+e.g. $\mathcal G_t \bot \F_t^W$ $\forall t\geq 0$, then $W$ is $\F_t = \sigma(\mathcal G_t \cup \F_t^W)$-Wiener process.\newline
+
+\note{Theorem I.31}: Let $W=\{W_t, t\geq 0\}$ be a Wiener process. For any $T>0$ and any sequence of partitions $\{0 = t^n_0 < t^n_1 < \cdots < t^n_{k_n} = T \}$ of $[0,T]$ such that 
+$\max_{i} |t^n_i - t^n_{i+1}| \stackrel{n\to \infty} \to 0 \text{ it holds that }$
+$$\sum^{k_n -1}_{i=1} (W_{t^n_{i+1}} - W_{t^n_i})^2 \to T \text{ in probability}$$
+\textbf{Proof}: Fix $0=t_0 < t_1 < \cdots < t_n = T$ and compute
+\begin{align*}
+E\Big( \sum^{n-1}_{i=0} (W_{t_{i+1}} - W_{t_i})^2 - T \Big)^2 &= E\Big(\sum^{n-1}_{i=0} [(W_{t_{i+1}} - W_{t_i})^2-(t_{i+1} - t_i)]\Big)^2 \\
+& = E\Big(\sum^{n-1}_{i=0} [(W_{t_{i+1}} - W_{t_i})^2-E(W_{t_{i+1}} - W_{t_i})^2] \Big)^2\\
+& = \text{var}\Big(\sum^{n-1}_{i=0} (W_{t_{i+1}} - W_{t_i})^2 \Big) \\
+& = \sum^{n-1}_{i=0} \text{var} (W_{t_{i+1}} - W_{t_i})^2 \\
+& = \sum^{n-1}_{i=0} \text{var} \bigg[ \Big(\frac{W_{t_{i+1}}-W_{t_i}}{\sqrt{t_{i+1} - t_i}}\Big)^2 (t_{i+1} - t_i) \bigg] \\
+& = \sum^{n-1}_{i=0} (t_{i+1} - t_i)^2 \text{var}(X) \\
+& = 2 \sum^{n-1}_{i=0} (t_{i+1} - t_i)^2 \\
+& \leq 2\cdot \max |t_{i+1} - t_i| \cdot T
+\end{align*}
+Where $X\sim \chi^2_1$, i.e. $\text{var }X=2$. The reason it was $\chi^2$ is because the variable above was $N(0,1)$ squared. \newline
+
+\note{Corollary I.32}: Trajectories of Wiener process $W$ have almost surely infinite total variation\footnote{$$\sup_{\Delta[0,t]} \sum_{t_i \in \Delta} |f(t_{i+1}) - f(t_i)| = f^{TV}(t)$$} over any interval.\newline
+\textbf{Proof}: We know that the sum goes to $T$. We also know that the same sum
+$$\sum^{n-1}_{i=0} (W_{t_{i+1}} - W_{t_i})^2 = \sum^{n-1}_{i=0} |W_{t_{i+1}} - W_{t_i}||W_{t_{i+1}} - W_{t_i}| \leq \ub{\max_i |W_{t_{i+1}} - W_{t_i}|}_{\stackrel P\to 0} \sum^{n-1}_{i=0} |W_{t_{i+1}} - W_{t_i}|$$
+Since the expression on the left goes to $T$, this means the total variation cannot be finite.\newline
+
+This means that the total ``length'' of the trajectory is infinite (but what is the length? the variation, in some sense). 
+
+$W(\omega)$ is continuous, which is nice. But it is nondifferentiable at any point, it has unbounded total variation on any interval and is $\gamma$-Holder only for $\gamma < 1/2$, etc.
+
+Theorem I.31 shows a positive result which will be useful for many. definition later.
+
+Denote $\Delta(T) = \{0= t_0 < t_1 < \cdots < t_n = T\}$, $\|\Delta(T)\| = \max_{0\leq i \leq n-1} |t_{i+1} - t_i|$, also denote
+$$V^2_\Delta(f) = \sum^{n-1}_{i=0} (f_{t_{i+1}} - f(t_i))^2$$
+$$V^1_\Delta(f)$$
+
+\note{Definition I.33}: Let $X$ be a stochastic process. If for any $t\geq 0$ and for any $\{\Delta_n(t) \}^\infty_{n=1}$ such that $\|\Delta_n\|\to 0$ there exists $\langle X \rangle_t = P-\lim_{n\to \infty} V^2_{\Delta_n(t)} (X)$ finite, then $X$ is called \textbf{Process with finite quadratic variation} and the process $\langle X\rangle = \{\langle X\rangle_t\}$ is called the \textbf{quadratic variation} of the process. \newline
+
+\subsection*{Lecture 6 (14.3)}
+Last week we've learned that the variation of the path of $W$ is with probability 1 infinite which makes the definition of $\int dW$ quite difficult. \newline
+If we have a continuous function $f$, then $$\sum^{n-1}_{i=0} (f(t_{i+1}) - f(t_i))^2, \quad\quad \sum^{n-1}_{i=0} | f(t_{i+1}) - f(t_i)|$$
+cannot both converge to a positive finite number. For example assume that  $$\sum^{n-1}_{i=0} (f(t_{i+1}) - f(t_i))^2 \to K \in (0,\infty)$$
+\begin{align*} \sum^{n-1}_{i=0} (f(t_{i+1}) - f(t_i))^2 &= \sum^{n-1}_{i=0} |f(t_{i+1}) - f(t_i)||f(t_{i+1}) - f(t_i)|\\
+& \leq \max_{0\leq i \leq n-1} |f(t_{i+1}) - f(t_i)| \sum^{n-1}_{i=0} | \cdots |
+\end{align*}
+From which it can be readily seen that both left and sum on the right cannot be a positive finite number. \newline
+For step functions both limits may be positive and finite (and even the same!). e.g. for an indicator function $I_{(a,b]}$ both the absolute value of the increments and the square of the increments tends to $2$. \newline
+
+\note{Definition I.33}: Let $X=\{X_t, t\geq 0\}$ be a stochastic process. If for any $T$ and any $\Delta_n$, $\Delta_n = \{0 = t_0 < t_1 <\cdots < t_n = T\}$, $\|\Delta_n\| \to 0$ exists $\langle X\rangle_T = P-\lim \sum^{n-1}_{i=0} (X_{t_{i+1}} - X_{t_i})^2$ finite (a.s.), then $X$ is called a process with \textbf{finite quadratic variation} $\langle X \rangle = \{\langle X \rangle_t, t\geq 0\}$\newline
+
+It is readily available from the defintiion that $\langle X \rangle_{t+s} = P-\lim \sum^{n-1}_{i=0} (X_{t_{i+1}} - X_{t_i})^2 = \langle X \rangle_t + P-\lim \sum^{n-1}_{i=0} (X_{t_{i+1}} - X_{t_i})^2 \geq \langle X \rangle_t$ (assuming $t\in \Delta_n$). This then means $\langle X\rangle$ must be non-decreasing $\Rightarrow \langle X \rangle$ has finite variation. Then the integral $\int d\langle X\rangle$ may be defined in the Stieltjes way.
+ 
+\section{Martingales and stopping times}
+\note{Definition II.1}: A stochastic process $M=\{M_t , t\geq 0\}$ is called a \textbf{martingale} if \begin{enumerate}
+\item[(i)] $E|M_t| < \infty \; \forall t\geq 0$
+\item[(ii)] $E[M_t | \F^M_s] = M_s$ a.s. $\forall 0\leq s \leq t$ ($\{\F^M_s\}$ is the cannonical filtration of $M$) 
+\end{enumerate}
+If $\{\F_t\}$ is a filtration, then $M$ is $\F_t$\textbf{-martingale} if additionally $M_t$ is $\F_t$-measurable $\forall t\geq 0$, i.e. $M$ is $\F_t$-adapted. \newline
+
+\note{Lemma II.2}: Let $W$ be $\F_t$-Wiener process. Then $W,\;\{W^2_t-t, t\geq 0\}$ and $\{\exp(W_t - t/2), t\geq 0\}$ are all $\F_t$-martinagles. \newline
+\note{Proof}: Measurability follows from the assumption and continuity of $x^2-t, \exp(x-t/2)$. Next
+$$E|W_t| = \sqrt{\frac 2\pi \cdot t}$$
+$$E|W^2_t - t| < 2t$$
+since $EW^2_t = t$ and $Et=t$ $\forall t$. Calculating this exactly is a bit of a pain, so bounds will do. Lastly,
+$$E|\exp\{W_t - t/2\}| = E\exp \{W_t - t/2\} = 1$$
+thanks to the well-known identity $E\exp (W_t) = \exp (t/2)$. \newline
+Finally the martingale property:
+$$E[W_t | \F_s] = E[W_t - W_s + W_s| \F_s] = E[W_t - W_s | \F_s ] + E[W_s| \F_s] \as = W_s$$
+Thanks to independent centered increments and measurability in the second term.
+\begin{align*}  E[W^2_t - t| \F_s] &= E[(W_t - W_s)^2 - (t-s) - s + 2W_t W_s - W^2_s | \F_s] \\
+&= E[(W_t - W_s)^2 - (t-s) | \F_s] + 2 E[W_t W_s|\F_s] - E[W^2_s | \F_s] - s \\
+&= (t-s) - (t-s) + 2W_s E[W_t| \F_s] - W^2_s -s \\
+& \as = W^2_s - s \\
+\end{align*}
+
+Where we again used independence and measurability w.r.t. $\F_s$ multiple times.
+\begin{align*} E[\exp\{W_t - t/2\} | \F_s] & = E[\exp\{W_t - W_s - (t-s)/2 \} \cdot \exp\{W_s - s/2\} | \F_s] \\
+&  \as = \exp(W_s - s/2) \cdot E \exp (W_t - W_s) \cdot \exp (-(t-s)/2) \\
+& \as =  \exp(W_s - s/2)
+\end{align*}
+QED \newline
+
+What this then means is that the history of the process cannot tell us anything about the trend in the future. \newline
+Replacing $E[M_t | \F_s] \as = M_s$ by inequality defines \textbf{submartingale} (\textbf{supermartingale}). \newline
+
+\note{Definition II.3}: Stochastic process $M = \{M_t, t\geq 0\}$ is called a \textbf{submartingale} if \begin{enumerate}
+\item[(i)] $E|M_t| < \infty \; \forall t\geq 0$
+\item[(ii)] $E[M_t | \F^M_s] \geq M_s$ a.s. $\forall 0\leq s \leq t$  $\big(\iff E[M_t - M_s |\F^M_s] \as \geq 0 \big)$
+\end{enumerate}
+It is possible to define $\F_t$-submartingale for any filtration $\{F_t\}$. \newline
+\textbf{Supermartingale} has the property $E[M_t - M_s | \F^M_s] \as \leq 0 \;\forall s\leq t$ \newline
+
+\note{Lemma II.4} (\textbf{Jensen inequality}) Let $X$ be a random variable. $E|X| < \infty$ and $g$ be a convex function such that $E|g(x)|<\infty$. Then for $\sigma$-algebra $\mathcal G\subset \F$ it holds
+$$g(E[X|\mathcal G]) \leq E[g(X)| \mathcal G]$$ \newline
+
+\note{Proposition II.5}: a) Let $M$ be an $\F_t$-martingale and $\varphi$ be a convex function s.t. $E|\varphi(M_t)| <\infty \; \forall t$. Then $\{\varphi(M_t), t\geq 0 \}$ is $\F_t$-submartingale. \newline
+b) Let $M$ be an $\F_t$-submartingale and $\varphi$ be a convex nondecreasing function s.t. $E|\varphi (M_t)| < \infty \; \forall t$. Then $\{\varphi(M_t), t\geq 0\}$ is $\F_s$-submartingale. \newline
+\note{Proof}: $\varphi$ must be finite convex function $\Rightarrow$ $\varphi$ is continuous and thus $\varphi(M_t)$ is $\F_t$-measurable. Integrability is assumed.
+$$E[\varphi(M_t) | \F_s] \geq  \varphi(E[M_t |\F_s]) \as = \varphi(M_s)$$
+And for $M$ submartingale and $\varphi$ nondecreasing:
+$$E[\varphi(M_t) | \F_s] \geq  \varphi(E[M_t |\F_s]) \as \geq \varphi(M_s)$$
+QED \newline
+
+We shall now discuss Lemma II.2. Since $W_t$ is a martingale, $W_t^2$ must then be a submartingale as $x\mapsto x^2$ is a convex function. We also know that $W^2_t - t$ is a martingale\footnote{Notice here that $x\mapsto x-t$ is a convex nondecreasing function. Since martingale is just a special case of a submartingale, this does not contradict the theorem, but it's interesting to notice nontheless.}. Recall I.31 where we learned that $\langle W \rangle_t = t$, i.e. $W^2_t - \langle W \rangle_t$ is a martingale. This is indeed a general fact - Doob-Meyer decomposition.
+
+$exp(W_t)$ is also a submartingale, $Ee^{W_t} = e^{t/2} < \infty$, $\exp(W_t) \cdot e^{-t/2}$ is a martingale. This leads to Girsanov, Novikov, but we shall not pursue this further in this course. \newline
+
+\note{Proposition II.6}: Submartingale (supermartingale) with constant expectation is martingale.\newline
+\note{Proof}: We only need to prove $E[M_t | \F_s] = M_s $a.s. since we assume measurability and integrability\footnote{I came up with an incorrect proof here, make sure I don't do that shit again:
+$$E[M_t | \F_s] = E[M_t - M_s + M_s | \F_s] \as= E[M_t - M_s] + M_s \as= M_s$$}
+$$E|E[M_t|\F_s] - M_s | = E(E[M_t|\F_s] - M_s) = E(E[M_t |\F_s]) - EM_s = 0$$
+QED\newline
+
+\note{Theorem II.7}: Let $M$ be $\F_t$-martingale and $N$ a $\mathcal G_t$-martingale.\begin{itemize}
+\item[(i)] $M$ is $\mathcal K_t$-martingale for any filtration $\{\mathcal K_t\}$ such that $\mathcal F^M_t \subset \mathcal K_t \subset \F_t$
+\item[(ii)] If $\F_t$ and $\mathcal G_t$ are independent $\forall t\geq 0$, then $M, N$ and $M\cdot N$ are $\F_t \vee \mathcal G_t$ martingales\footnote{$\F_t \vee \mathcal G_t = \sigma(\F_t \cup \mathcal G_t)$ is the $\sigma$-algebra generated by sets $F\cap G, F\in \F_t, G\in\mathcal G_t$}.
+\end{itemize}
+\note{Proof}: (i) $M$ is $\F^M_t \subset \mathcal K_t$ adapted. Integrability follows from the assumption.
+$$E[M_t | \mathcal K_s] \as= E(E[M_t| \F_s]|\mathcal K_s) \as= E[M_s|\mathcal K_s] \as= M_s$$
+(ii) Measurability for $M\cdot N$ simple (yeah right, go through this yourself). $E|M_t \cdot N_t| \stackrel \bot= E|M_t| \cdot E|N_t| < \infty$.\newline
+Lastly, $C= F\cap G, F\in \F_s, G\in \mathcal G_s$:
+\begin{align*}\int_C M_t \cdot N_t\;dP & = \int_\Omega M_t I_F \cdot N_t I_G \;dP = E[M_t I_F \cdot N_t I_G] \stackrel \bot= E[M_t I_F] \cdot E[N_t I_G] = E[M_s I_F] \cdot E[N_s I_G] \\
+&= E[M_t I_F \cdot N_t I_G] = \int_{C} M_s \cdot N_s \; dP\end{align*}
+From that for any $A \subset \F_s \vee \mathcal G_s$ we have $\int_A M_t \cdot N_t \; dP = \int_A M_s \cdot N_s \; dP$.
+
+\subsection*{Lecture 7 (15.3) }
+\note{Def}: $M$ is $L_p$-martingale (for some $p\geq 1$) if $E|X_t|^p, \forall t \geq 0$\newline
+
+\note{Theorem II.8}: (Doob maximal inequalities). Let $M=\{M_t , t\geq 0\}$ be a right continuous $L_p$-martingale. \begin{enumerate}
+\item[(i)] if $p\geq 1$
+$$P[\sup_{0\leq s \leq t} |M_s| > a ] \leq a^{-p} E|M_t|^p$$
+We can see this as a Markov inequality, except we have the supremum there. The price for the supremum is the right-continuousness.
+\item[(ii)] if $p>1$
+$$E[\sup_{0\leq s \leq t} |M_s|^p ] \leq \Big( \frac{p}{p-1}\Big)^p E|M_t|^p$$
+\end{enumerate}
+\note{Proof}: Standard Stochastic Analysis Procedure: We prove this for discrete martingales and then use continuity to get to continuous.\newline
+take $t$ fixed $\forall n \in \N$, $t_k = \frac{kt}{2^n},\; k=0,1,\dots, 2^n$ \newline
+We shall prove that $P[\max_{0\leq k \leq 2^n} |M_{t_k}| > a ] \leq a^{-p} E|M_t|^p$. The proof will be similar to the proof of Chebyshev's inequality, but we need to use the fact, that $M$ martingale $\Rightarrow$ $|M|$ is submartingale (II.5)
+$$A_k = \{\omega: |M_{t_k}(\omega)| > a, |M_{t_j}(\omega)| \leq a, j=0,\dots, k-1\} \in \F_{t_k}$$
+Then
+$$\{\omega: \max_{0\leq k \leq 2^n} |M_{t_k} (\omega)| > a \} = \bigcup^{2^n}_{k=0} A_k$$
+and $A_k$'s are pairwise disjoint.
+$$P\Big[\max_{0\leq k \leq 2^n} |M_{t_k}| > a \Big] = \sum^{2^n}_{k=0} P(A_k) = \sum^{2^n}_{k=0} \int_{A_k} dP \stackrel{(1)}< \sum^{2^n}_{k=0} \int_{A_k} \frac{|M_{t_k}|^p}{a^p} dP \leq  \sum^{2^n}_{k=0} \int_{A_k} \frac{|M_{t}|^p}{a^p} dP$$
+Where $(1)$ was thanks to $|M_{t_k}/a| > 1$
+$$= a^{-p} \int_{\bigcup A_k} |M_t|^p dP \leq a^{-p} E|M_t|^p$$
+That would be it for the discrete case. Now
+$$\sup_{0\leq s \leq t} |M_s| \stackrel{(\ast)}= \lim_{n\to \infty} \max_{0\leq k \leq 2^n} |M_{t_k}|$$
+$(\ast)$=right-continuity. Thus
+$$P\Big(\sup_{0\leq s \leq t} |M_s| > a \Big) = \overline \lim_{n\to \infty} P \Big(\max_{0\leq k \leq 2^n} |M_{t_k}| > a \Big) \leq a^{-p} E|X_t|^p$$
+Since the RHS doesn't depend on n. \newline
+
+For (ii) we need to employ this following identity.
+$$X\text{ r.v. } X\geq 0 \text{ a.s. }, EX^p< \infty \Rightarrow EX^p = p \int^\infty_{0} (1-F_x(u))u^{p-1} du$$
+Denote $|M_t|^* = \sup_{0\leq s \leq t} |M_s|$
+$$E|M_t|^{\ast p} = p \cdot \int^\infty_0 P[|M_t|^\ast > u] u^{p-1} du$$
+% we didn't use this: = p E \int^\infty_0 I_{[|M_t|^\ast>u]} u^{p-1} du = p\cdot E \int^{|M_t|^*}_0 u^{p-1} du$$
+We'll use that 
+$$ a^{-p} \int_{\bigcup A_k} |M_t|^p dP = a^{-1} E|M_t| I_{[|M_t|^* > a]}$$
+$$\leq p \int^\infty_0 u^{-1} E[|M_t| \cdot I_{[|M_t|^* > u]} \cdot u^{p-1} du = p\cdot E\bigg[|M_t| \cdot \int^\infty_{0} I_{[|M_t|^* > u]} u^{p-2} du\bigg] $$
+$$= p E\bigg[ |M_t| \int^{|M_t|^*}_0 u^{p-2} du \bigg] = \frac{p}{p-1} E\bigg[|M_t| (|M_t|^*)^{p-1}\bigg]$$
+Where we used the Holder inequality $\frac 1p + \frac 1q = 1 \Rightarrow q = \frac{p}{p-1}$
+$$\leq \frac{p}{p-1} \bigg(E|M_t|^p\bigg)^{1/p} \Bigg(E\bigg(|M_t|^{* p-1}\bigg)^{\frac p{p-1}}\Bigg)^{\frac {p-1}p}$$
+Using
+$$E(|M_t|^*)^p \leq \frac{p}{p-1} (E|M_t|^p)^{1/p} \cdot (E(|M_t)^*)^p)^{1-1/p}$$
+$$[E(|M_t|^*)^p]^{1/p} \leq (\frac{p}{p-1}) (E|M_t|^p)^{1/p}$$
+Where we put both sides to pth power and get the inequality. The special case for $p=2$ shall be used the most.
+$$p=2\quad E\Big(\sup_{0\leq s \leq t} |M_s|^2\Big) \leq 4\cdot EM^2_t$$
+QED\newline
+
+To study random processes, it is often useful to know when a certain event happens. That's why we use the notion of a random time $\tau:\Omega \to [0,\infty]=\R_+ \cup \{\infty\}$ random variable s.t. $[\tau \leq t] \in \F$ \newline
+
+\note{Defintion II.9}: Random time $\tau$ is called $\F_t$\textbf{-stopping time}\footnote{Markovsky cas} if 
+$$[\tau \leq t ] = \{\omega: \tau(\omega) \leq  t \} \in \F_t \quad \forall t\geq 0$$
+$\tau$ is called $\F_t$\textbf{-optional}\footnote{opcni} if 
+$$[\tau < t] \in \F_t \quad \forall t\geq 0$$
+
+\note{Lemma II.10}: Let $\tau$ be $\F_t$-stopping time $\Rightarrow$ $\tau$ is $\F_t$ optional. \newline
+\note{Proof}:
+$$[\tau < t ] = \bigcup^\infty_{n=1} \ub{[\tau \leq t- \frac 1n ]}_{\in \F_{t-\frac 1n} \subset \F_t} \in \F_t$$
+Reverse cannot hold since
+$$[\tau \leq t ] = \bigcap^\infty_{n=1} \ub{[\tau < t + \frac 1n ]}_{\notin \F_t}$$
+Furthermore we see that 
+$$\bigcap^\infty_{n=1} [\tau < t + \frac 1n] = \bigcap^\infty_{n=N} [\tau < t + \frac 1n ] \quad \forall N \in \N$$
+
+\note{Definition II.11}: For $\{\F_t\}$ filtration define $$\F_{t+} = \bigcap_{h>0} \F_{t+h}$$
+$\{\F_{t+}\}$ is again a filtration. \newline
+$\{\F_t\}$ is called \textbf{right-continuous} if $\forall t\geq 0: \F_t = \F_{t+}$ \newline
+Clearly, $\{\F_{t+}\}$ is right-continuous\footnote{We'll see soon that right continuousness means infinite information happening right after the time $t$ or sth.} \newline
+
+\note{Lemma II.12}: Let $\{\F_s\}$ be a right-continuous filtration and $\tau$ is $\F_s$-optional, then $\tau$ is $\F_s$-stopping. \newline 
+\note{Proof}: $$[\tau \leq t] = \bigcap^\infty_{n=1} [\tau < t + \frac 1n] \in \bigcap^\infty_{n=1} \F_{t+\frac 1n} = \F_{t+} = \F_t$$
+QED \newline
+
+The most important example of the stopping time is the so-called \textbf{hitting time}\footnote{Exist time, entrance time, Czech: cas vstupu}. \newline
+$X$ is a process, $\{X_t, t\geq 0\}$, $A$ is a set $\in \R$, then $\tau_A = \inf\{t\geq 0, X_t \in A\}$. \newline
+The natural question now is when is hitting time also stopping or optional? \newline
+
+\note{Theorem II.13}: Let $X$ be a stochastic process, $A\subset \R$. $\{\F_t\}$ filtration, $X$ is $\F_t$-adapted. \begin{enumerate}
+\item[(i)] If $X$ is continuous and $A$ a closed set, then $\tau_A$ is a $\F_t$-stopping.
+\item[(ii)] If $X$ is right-continuous and $A$ open set, then $\tau_A$ is a $\F_t$-optional.
+\end{enumerate}
+\note{Proof}: i) We want to show that $[\tau_A \leq t] \in \F_t\; \forall t \geq 0$
+$$\{\omega: \tau_A(\omega) \leq t\} = \{\omega: \inf\{s\geq 0, X_s(u) \in A \} \leq t \} = \{\omega: \inf_{0\leq s \leq t} d(X_s(\omega), A) = 0\} = \{ \omega: \inf_{q \in \mathbb Q \cap [0,t]} d(X_q (\omega) , A) = 0\} $$
+Where $d(\cdot , A)$ is the distance to set $A$, a continuous function.
+$$=\bigcap^\infty_{n=1} \bigcup_{q \in \mathbb Q \cap [0,t]} \{\omega: d(X_q(\omega), A) < 1/n \}=\bigcap^\infty_{n=1} \bigcup_{q\in \mathbb Q\cap [0,t]} \ub{[d(X_q,A) < 1/n]}_{\in \F_q \subset \F_t} \in \F_t$$
+ii) We want $[\tau_A < t] \in \F_t \; \forall t$, $[\tau_A < t] \iff \inf\{s: X_s \in A\} < t$. That in turn means there exists $s_A < t: X_{s_A}(\omega) \in A$ (because of strict inequality). $A$ is open, therefore $\exists \epsilon> 0: X_s(\omega) \in A \; \forall s \in [s_A, s_A + \epsilon) \Rightarrow \exists q \in [s_A, s_A + \epsilon): X_q(\omega) \in A$. Altogether:
+$$[\tau_A < t] = \{\omega: \exists q \in [0,t) \cap \mathbb Q, X_q (\omega) \in A\} = \bigcup_{q\in [0,t) \cap \mathbb Q} \ub{\{ X_q(\omega) \in A \}}_{\in \F_q \subset \F_t} \in \F_t$$
+QED\newline
+
+The natural question to ask is whether we couldn't prove (ii) for $\F_t$ stopping time, but we can see that at time $t$ we have absolutely no information where the process with go next (e.g. for set $A=(a,\infty)$ and $X_t=a$) \newline
+Similarly, for i) take the set $A=[a, \infty)$ with right-continuous. With a continuous process, we can only observe rational times prior to time $t$ and see where it will go. For a right-continuouss process it could simply jump and its behaviour prior to $t$ would yield a uncountable sth.
+
+\subsection*{Lecture 8 (21.3)}
+\note{Definition II.14.} Let $X$ be a stochastic process and $\tau$ be a random time. Denote
+$$X^\tau = \{ X^\tau_t, t\geq 0\} := \{X_{\tau \wedge t}, t\geq 0\}$$
+a \textbf{stopped process}. Further define
+$$X_\tau := X_{\tau(\omega)}(\omega) \text{ if }\tau(\omega) < \infty$$
+$$ = 0 \; (X_0(\omega)) \text{ if }\tau (\omega) = \infty$$
+the \textbf{sampled process}. \newline
+
+\note{Definition II.15.}  Let $\tau$ be an $\F_t$-stopping time, $\{T_t\}$ filtration. Denote
+$$\F_\tau := \{ F \in \F_\infty: F\cap [\tau \leq t] \in \F_t \}$$
+Where $\F_\infty = \sigma \Big(\bigcup_{t\geq 0} \F_t \Big)$. Called the \textbf{sigma algebra\footnote{It really is a sigma algebra \begin{enumerate}
+\item $\Omega \in \F_\tau$ since $\Omega\cap[\tau \leq t] = [\tau \leq t] \in \F_t$
+\item $F \in \F_\tau$, then $F^C \cap [\tau \leq t] = [\tau \leq t ] \bs (F\cap [\tau \leq t]) \in \F_t \cap \F_t = \F_t$
+\item $F_i \in \F_\tau, i\in I \subset \N$
+\end{enumerate}} of events prior to $\tau$}
+If $\tau \leq t$ we know (about any) $F\in \F_\tau$ whether $F$ occurs or not at the time $t$. \newline
+$\omega\; \tau(\omega)\leq t$ we know for all $F\in \F_\tau$ whether $\omega \in F$ or $\omega \notin F$ at the time $t$. \newline
+
+Basic properties of stopping times and their $\sigma$-algebras \begin{itemize}
+\item Prove that $\forall s \in \R_+$, $\forall \{\F_t\}$ filtrations, $s$ is an $\F_t$-stopping time
+\end{itemize}
+
+\note{Proposition II.16.} Let $\sigma$ and $\tau$ be $\F_t$-stopping times \begin{enumerate}
+\item[(i)] $\sigma \wedge \tau, \sigma \vee \tau$ and $\sigma+\tau$ are $\F_t$-stopping times
+\item[(ii)] $A \in \F_\sigma \Rightarrow A\cap [\sigma\leq \tau] \in \F_\tau$
+\item[(iii)] $\sigma \leq \tau \Rightarrow \F_\sigma \subset \F_\tau$
+\item[(iv)] $\F_{\tau \wedge \sigma} = \F_\sigma \cap \F_\tau$
+\item[(v)] $[\sigma < \tau], [\sigma \leq \tau], [\tau < \sigma], [\tau \leq \sigma] \in \F_\tau \cap \F_\sigma$
+\end{enumerate}
+\note{Proof} \begin{enumerate}
+\item[(i)] $[\sigma \wedge \tau \leq t] = [\sigma \leq t] \cup [\tau \leq t]$ and $[\sigma \vee \tau \leq t] = [\sigma \leq t] \cap [\tau\leq t]$
+$$[\sigma + \tau > t ] = [\sigma = 0, \tau > t] \cup [\tau = 0, \sigma > t] \cup \bigcup_{q \in \mathbb Q\cap (0,t]} [\sigma > q, \tau > t-q] \cup [\sigma \geq t, \tau > 0]$$
+Then $[\sigma = 0] \in \F_0 \subset \F_t$ and so on. $q$ is less than $t$. Lastly $[\sigma \geq t] = [\sigma < t ]^C$ and $[\sigma < t] = \bigcup^\infty_{n=1} [\sigma \geq t - 1/n]$ and $[\sigma \geq t- 1/n] \in \F_{t-1/n} \subset \F_t$.
+\item[(ii)] $A \in \F_\sigma \Rightarrow \forall t: A\cap [\sigma \leq t] \in \F_t$. We want $A\cap [\sigma \leq \tau] \cap [\tau \leq t] \in \F_t \;\forall t$?
+\begin{align*}A\cap \{\omega : \sigma(\omega) \leq \tau(\omega), \tau(\omega) \leq t \} &= A\cap \{\omega: \sigma(\omega) \leq t, \sigma(\omega) \leq \tau(\omega) \leq t\} \\ &= A\cap \{\omega: \sigma(\omega) \leq t, \sigma(\omega)\wedge t \leq \tau(\omega) \wedge t, \tau(\omega) \leq t \}\\ &= \ub{A\cap [\sigma \leq t]}_{\in \F_t} \cap [\sigma_t \wedge t \leq \tau \wedge t] \cap \ub{[\tau \leq t]}_{\in \F_t} \end{align*}
+$\sigma\wedge t$ is $\F_t$ a measurable random variable, and we have $[\sigma \wedge t \leq a]$ equalling $\Omega$ if $a\geq t$, or $[\sigma \leq a]$ if $a<t$, both are in $\F_t$. Since also $\tau \wedge t$ is $\F_t$-measurable, we get $[\tau \wedge t - \sigma \wedge t \geq 0] \in \F_t$ and we're done 
+\item[(iii)] Follows directly from (ii). What this property says is that in some sense we again have a filtration at the random times. For example, if $X_0 = 0$, $X$ is continuous and we have hitting times $\tau_n$, $n=1,2,\dots$, $0< \tau_1 < \tau_2 < \cdots$
+\item[(iv)] From (iii) we get $\tau\wedge \sigma \leq \tau \Rightarrow \F_{\tau \wedge \sigma} \subset \F_\tau$ and $\tau \wedge \sigma \leq \sigma \Rightarrow \F_{\tau \wedge \sigma} \subset \F_\sigma$, i.e. $\F_{\tau\wedge \sigma} \subset \F_\tau \cap \F_\sigma$.\newline
+Take $A\in \F_\sigma \cap \F_\tau$. We want $A\cap [\sigma\wedge \tau \leq t] \stackrel ?\in \F_t\; \forall t \geq 0$ but
+$$A\cap [\sigma \wedge \tau \leq t] = A\cap ([\sigma \leq t] \cup [\tau \leq t]) = A\cap [\sigma \leq t] \cup A\cap [\tau \leq t] \in \F_t$$
+\item[(v)]
+$$[\sigma < \tau] \cap [ \tau \leq t] = [\sigma \wedge t < \tau \wedge t] \cap [\tau \leq t] \in \F_t$$
+$$[\sigma \leq \tau ] \cap [\tau \leq t] = [\sigma \wedge t \leq \tau \wedge t] \cap [\tau \leq t] \in \F_t$$
+Using symmetry and complements, we're done.
+\end{enumerate}
+
+Now we want to construct a discrete approximation of stopping times. \newline
+\note{Proposition II.17}: Let $\tau$ be a $\F_t$-stopping time. Define
+$$\tau^n = k\cdot 2^{-n} \quad \text{ if }(k-1)2^{-n} < \tau \leq k\cdot 2^{-n},\; k=0, 1,2,\dots$$
+and $\tau^n = \infty$ if $\tau=\infty$. Further define
+$$\tilde\tau^n = k\cdot T \cdot 2^{-n} \quad \text{ if } (k-1) \cdot T \cdot 2^{-n} < \tau \leq k\cdot T \cdot 2^{-n},\; k=0,1,2,\dots, 2^n$$
+and $\tilde \tau^n = \infty$ if $\tau>T$ (i.e. this is a bounded discrete approximation). \newline
+Then both $\tau^n, \tilde\tau^n$ are $\F_t$-stopping times and $\tau^n \searrow \tau$ for $n\to \infty$ and $\tilde\tau^n \searrow \tau$ if $n\to \infty, T\to \infty, T/2^n \to 0$, e.g. $T=n$ \newline
+\note{Proof}: We need to show $[\tau^n \leq t] \in \F_t \; \forall t \geq 0$
+$$[\tau^n \leq t] = [\tau \leq k/2^n] \text{ for }k\text{ such that } t \in \Big( \frac k{2^n}, \frac{k+1}{2^n} \Big)$$
+if $t = k /2^n$ then $[\tau^n \leq t ] = [\tau^n \leq k/2^n] = [\tau \leq k / 2^n]$. Both of those are $\in \F_{k/2^n} \subset \F_t$ \newline
+
+Back to $X^\tau$ and $X_\tau$. \newline
+\note{Theorem II.18}: Let $X$ be a continuous $\F_t$-adapted process and $\tau$ be a $\F_t$-stopping time. Then \begin{enumerate}
+\item[(i)] $X^\tau$ is continuous $\F_t$-adapted.
+\item[(ii)] $X_\tau$ is $\F_\tau$-measurable random variable. 
+\end{enumerate}
+\note{Proof}: There is a sequence $\tau^n \searrow \tau$ of $\F_t$-stopping times which take only countably (or finitely) many values (II.17). $X_{\tau^n\wedge t} \as \to X_{\tau\wedge t}$ since $X$ is continuous. If $t$ is fixed, we define $\tau^n  = k\cdot t\cdot  2^{-n}$ if $(k-1) \cdot t \cdot 2^{-n} < \tau \leq k\cdot t\cdot 2^{-n}\; k=0,1,2,\dots$. \newline
+We want to show that $X_{\tau^n\wedge t}$ is $\F_t$-measurable.
+$$X_{\tau^n\wedge t} = X_t \cdot I_{[\tau^n >t ]} + \sum_{k=0}^{2^n} X_{\frac {kt}{2^n}} \cdot I_{[\tau^n = \frac{kt}{2^n}]}$$
+But $I_{[\tau^n = \frac{kt}{2^n}]} = I_{[\frac{(k-1)t}{2^n} <\tau \leq \frac {kt}{2^n}]}$. Since those things are $\F_{\frac{kt}{2^n}}$ measurable and $k \leq 2^n$, they are $\F_t$-measurable. Thus we get $X_{\tau^n \wedge t}$ is $\F_t$-measurable random variable. \newline
+$X^{\tau^n}$ is $\F_t$-adapted $\forall n \Rightarrow X^\tau$ is $\F_t$-adapted since $X^{\tau^n}_t \to X^\tau_t \; \forall t \geq 0$. \newline
+
+(ii) $X_\tau$ is $\F_\tau$-measurable \newline
+$$\forall a \in \R: [X_\tau \leq a] \in \F_\tau \iff [X_\tau \leq a] \cap [\tau \leq t] \in \F_t \;\forall t \geq 0, \;\forall a\in \R$$
+\begin{align*} \{\omega: X_{\tau(\omega)} (\omega) \leq a \} \cap \{\omega: \tau(\omega) \leq t\} & = \{\omega : X_{\tau(\omega) \wedge t} (\omega) \leq a, \tau(\omega) \leq t \} \\ &= \{\omega: X^\tau_t(\omega) \leq a, \tau(\omega) \leq t\}\\\ &= [X^\tau_t \leq a] \cap [\tau \leq t] \in \F_t \; \forall t \end{align*}
+And that is the end of the proof. \newline
+
+Recall I.28: $\F_t$-adapted continuous $X \Rightarrow X$ is $\F_t$-progressive. \newline
+\note{Theorem II.19}: Let $X$ be $\F_t$-progressively measurable, $\tau$ an $\F_t$-stopping time. Then \begin{enumerate}
+\item[(i)] $X^\tau$ is $\F_t$-progressively measurable.
+\item[(ii)] $X_\tau$ is $\F_\tau$ measurable random variable.
+\end{enumerate}
+\subsection*{Lecture 9 (22.3)}
+\note{Proof}: $\Omega \times [0,T] \to \R: (\omega, t) \mapsto X_t(\omega)$ is $\F_T \otimes \B$ measurable. \newline
+$(\omega, t) \mapsto (\omega, \tau(\omega) \wedge t)$ for $(\omega, t) \in \Omega \times [0,T]$. If the latter map is measurable w.r.t. $\mathcal F_T \otimes \B / \F_T \otimes \B$, that is if $\{(\omega, t) \in \Omega \times [0,T]; (\omega, \tau(\omega) \wedge t) \in A\times B\} \in \F_T \otimes \B$ $\forall A \in\F_T, B\in \B$ then $(\omega, t) \mapsto (\omega, \tau(\omega) \wedge t) \mapsto X_{\tau(\omega)\wedge t} (\omega)$ is altogether measurable, since both maps are measurable. \newline
+
+It is sufficient to consider $B=[0,b]$
+$$\{(\omega, t ) \in [0, T]; (\omega, \tau (\omega) \wedge t) \in A \times [0,b] \} \stackrel{?}\in \F_T \otimes \B\;\; \forall A\in \F_T, b>0$$
+Now, \textbf{1)} assume $b\leq T$:
+If $t \leq b \Rightarrow \tau(\omega) \wedge t \leq b \; \forall \omega$ \newline
+$A\times [0,b]$\newline
+If $t>b \Rightarrow \tau(\omega) \wedge t \leq b$ for $\omega: \tau(\omega)\leq b$ \newline
+$A\cap [\tau(\omega) \leq b] \times (b, T]$ \newline
+Thus here we have $S=\ub{A}_{\in \F_T}\times \ub{[0,b]}_{\in \B} \cup \ub{A}_{\in \F_T}\cap \ub{[\tau \leq b]}_{\in \F_b\subset \F_T} \times \ub{(b,T]}_{\in \B} \in \F_T \otimes \B$
+
+\textbf{2)} assume $b>T$ \newline
+$t \leq T \Rightarrow \tau(\omega) \wedge t \leq b \; \forall \omega$, $A\times [0,T]$ \newline
+Then $S= A\times [0,T] \in \F_T \otimes \B$ \newline
+
+Thus we get that
+$$\{ (\omega ,t) \in \Omega \times T: X_{\tau(\omega)\wedge t} (\omega) \in A\times B \} \in \F_T\otimes \B\quad \forall A\in\F_T, B\in \B$$
+since it is a composition of two measruable maps (the first one with respect to the same sigma algebra). \newline
+
+\note{ii)} Like in the proof of II.18. QED. \newline
+
+\note{Proposition II.20}: Let $Z \in L_1(P)$, $\sigma, \tau$ two $\F_t$-stopping times. On the set $[\sigma< \tau]$ it a.s. holds
+$$E[Z|\F_\sigma] = E[Z|\F_{\sigma \wedge \tau}]$$
+i.e. $\{\omega: \sigma(\omega) \leq \tau(\omega) \} = A$, for almost all $\omega \in A$:
+$$\ub{E[Z|\F_\sigma]}_{\F_\sigma-meas}(\omega) = \ub{E[Z|\F_{\sigma \wedge \tau}]}_{\F_{\sigma\wedge \tau}-meas}(\omega)$$
+\note{Proof}: We want to prove that
+ $$I_{[\sigma \leq \tau]} \cdot E[Z|\F_\sigma] \as= I_{[\sigma \leq \tau]} \cdot E[Z|\F_{\sigma\wedge \tau}]$$
+ We also know (II.16 v) that $I_{[\sigma\leq\tau]}$ is $\F_{\sigma\wedge \tau}$ -measurable, similarly the RHS and we get
+
+ $$E[I_{[\sigma \leq \tau]} \cdot  Z|\F_\sigma] \as= E[ I_{[\sigma \leq \tau]} \cdot Z|\F_{\sigma\wedge \tau}]$$
+ Take $\forall F\in \F_\sigma$
+ $$ \int_F I_{[\sigma \leq \tau]} Z dP = \int_{F\cap [\sigma \leq \tau]} Z dP=$$
+ We have $F\cap [\sigma\leq\tau]\in \F_\tau$ (II.16 ii) and also $[\sigma\leq\tau]\in \F_\sigma$ thus we get $F\cap [\sigma\leq \tau] \in \F_\sigma \cap \F_\tau = \F_{\sigma \wedge \tau}$. From this we get the next equality
+ $$=\int_{F\cap [\sigma\leq\tau]} E[Z|\F_{\sigma\wedge \tau}]dP = \int_F I_{[\sigma\leq\tau]} E[Z|\F_{\sigma\wedge\tau}]dP =\int_F E[ I_{[\sigma\leq\tau]} \cdot Z|\F_{\sigma\wedge\tau}]dP $$
+ QED \newline
+ 
+ \note{Corollary II.21}: Let $Z \in L_1 (P)$, $\sigma,\tau,\; \F_t$-stopping times. Then
+ $$E\big[ E(Z|\F_\sigma) | \F_\tau \big] = E[Z | \F_{\sigma \wedge \tau}]$$
+\note{Proof}: We want  $\forall F \in \F_\tau$
+$$\int_F E(Z|\F_\sigma) dP = \int_F E[Z| \F_{\sigma \wedge \tau}] dP$$ 
+ But we have
+ $$\int_F E[Z|\F_\sigma] dP = \int_{F\cap [\sigma \leq \tau]} E[Z|\F_\sigma] dP + \int_{F\cap [ \tau<\sigma]} E[Z|\F_\sigma] dP$$
+ For the first integral, we get the desired equality from the previous proposition. \newline
+ For the second integral:
+ $$\int_{F\cap [\tau < \sigma]} E[Z|\F_\sigma] dP \stackrel{(1)}= \int_{F\cap [\tau < \sigma]} Z dP \stackrel{(2)}= \int_{F\cap [\tau < \sigma]} E[Z|\F_{\sigma \wedge \tau}] dP$$
+(1) Since $F \in \F_\tau$ and $F\cap [\tau<\sigma] \in \F_\sigma$\newline
+(2) Since $F\in \F_\tau$ and $[\tau < \sigma] \in \F_\tau$ thus $F\cap [\tau < \sigma] \in \F_\sigma \cap \F_\tau = \F_{\sigma\wedge \tau}$ \newline
+By adding the two integrals on the RHS we get the desired equality. QED \newline
+
+Now we're ready for the SAMPLING THEOREM\newline
+\note{Theorem II.22}: Let $M$ be a continuous\footnote{The theorem can be generalized to unbounded stopping times and right-continuous martingales, but this is sufficient for us} $\F_t$-martingale and $\sigma,\nu$ two $\F_t$-stopping times such that $0 \leq \nu \leq \sigma \leq T < \infty$ (i.e. $\nu$ and $\sigma$ are bounded). Then
+$$E[M_\sigma| \F_\nu] \as= M_\nu$$ 
+\note{Proof}: \textbf{a)} we prove the theorem for $\nu$ and $\sigma$ with countably (finitely) many values. \newline
+\textbf{b)} We use continuity of $M$ to prove the theorem for general $\nu, \sigma$ \newline
+
+\textbf{a)} Assume $\nu^n, \sigma^n \in \Big\{ \frac{iT}{2^n} \Big\}^{2^n}_{i=0}$, denote $t_i = \frac{iT}{2^n}$ \newline
+\textbf{i)} Assume that if $\sigma^n = t_i \Rightarrow \nu^n \in \{t_{i-1}, t_i\}$ (they are neighbours). \newline
+Now we want to show that 
+$$E[M_{\sigma^n}| \F_{\nu^n}] \as = M_{\nu^n}$$
+Take $F\in \F_{\nu^n}$
+$$\int_F M_{\sigma^n} dP = \sum^{2^n}_{i=0} \int_{F\cap [\sigma^n = t_i]} M_{\sigma^n} dP = \sum^{2^n}_{i=0} \int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_i]} M_{\sigma^n} dP + \int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_{i-1}]} M_{\sigma^n} dP$$
+$$= \sum^{2^n}_{i=0} \int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_i]} M_{\nu^n} dP +\int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_{i-1}]} M_{t_i} dP$$
+ $F\cap [\sigma^n = t_i]\cap[\nu^n=t_{i-1}] = F\cap [\sigma^n > t_{i-1}] \cap [\nu^n = t_{i-1}] \in \F_{t_{i-1}}$. Thus from the martingale property, it is equal to
+$$= \sum^{2^n}_{i=0} \int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_i]} M_{\nu^n} dP +\int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_{i-1}]} M_{t_{i-1}} dP$$
+$$= \sum^{2^n}_{i=0} \int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_i]} M_{\nu^n} dP +\int_{F\cap [\sigma^n = t_i]\cap[\nu^n=t_{i-1}]} M_{\nu^n} dP$$
+$$=\int_F M_{\nu^n} dP$$
+\textbf{ii)} Take $\nu^n, \sigma^n \in \{\frac{iT}{2^n}\}^{2^n}_{i=0}$, $\nu^n \leq \sigma^n$ general \newline
+There exists a sequence $\tau_0,\tau_1, \dots, \tau_{2^n}$ such that they are stopping stimes and $\nu^n = \tau_0 \leq \tau_1 \leq \cdots \leq \tau_{2^n} = \sigma^n$ and $\tau_i - \tau_{i-1} \in \{ 0, T/2^n\}$. How? Take $\tau_0=\nu_n$ and $\tau_{i+1} = (\tau_i + T/2^n) \wedge \sigma^n$. Then
+$$E[M_{\tau_{i+1}} | \F_{\tau_i}] \as= M_{\tau_i}$$
+and since $\F_{\nu^n} = \F_{\tau_0} \subset \F_{\tau_1} \subset \cdots \subset \F_{\tau_{2^n}} = \F_{\sigma^n}$ we get
+$$E[M_{\sigma^n} | \F_{\nu^n}] \as = E[E[M_{\sigma^n}|\F_{\tau_{2^n-1}}] | \F_{\nu^n}] \as = E[M_{\tau_{2^n-1}}|\F_\nu^n] \as = \cdots \as = E[M_{\tau_1}| \F_{\nu^n}] \as= M_{\nu^n} $$
+
+\textbf{b)} Take $\sigma, \nu$ general, there exist (II.17) $\sigma^n, \nu^n \in \{ \frac{iT}{2^n}\}^{2^n}_{i=0}$ stopping times such that $\sigma^n \searrow \sigma, \nu^n \searrow \nu$. \newline
+By continuity, $M_{\sigma^n} \to M_\sigma, M_{\nu^n} \to M_{\nu}$ and we know $E[M_{\sigma^n} | \F_\nu^n] \as = M_{\nu^n}\;\forall n\in \N$ \newline
+We want $E[M_\sigma | \F_\nu] \as= M_\nu$.
+$$E[\lim_{n\to \infty} M_{\sigma^n} |\F_\nu] = \lim_{n\to \infty} E[M_{\sigma^n}| \F_\nu]$$
+How can we exchange the limit and the integral? Thanks to boundedness of the stopping times is $M_{\sigma^n}$ uniformly integrable. Why?
+$$E|M_T| < \infty \Rightarrow \sup_{A, P(A) \leq \delta} \int_A |M_T| dP \stackrel{\delta \to 0}\to 0$$
+$$\lim_{N\to \infty} \sup_{n} \int_{|M_{\sigma^n}| \geq N} |M_{\sigma^n}| dP = 0$$
+$\{M_{\sigma^n}\}^{2^n}_{n=0}$ is a discrete martingale, this means $\{|M_{\sigma^n}|\}^{2^n}_{n=0}$ is a submartingale, thus we get
+$$ \int_{|M_{\sigma^n}| \geq N} |M_{\sigma^n}| dP \leq \int_{|M_{\sigma^n}| \geq N} |M_T| dP$$
+Now from Markov inequality
+$$P(|M_{\sigma^n}| \geq N) \leq \frac{E|M_{\sigma^n}|}{N} \leq \frac{E|M_T|}{N}$$
+does not depend on $n$. Thus
+$$\sup_n \int_{|M_{\sigma^n}| \geq N} |M_{\sigma^n}| dP \leq \sup_{A, P(A) } \frac{E|M_T|}{N} \to 0$$
+ 
+ Thus we can exchange the limit and then use the discrete property and we're done (using II.19 to get $E[M_\nu | \F_\nu] = M_\nu$)
+
+\subsection*{Lecture 10 (29.3)}
+\note{Corollary II.23} (Stopping) Let $M$ be a continuous $\F_t$-martingale, $\tau$ $\F_t$-stopping. Then $M^{\tau} = \{M_{\tau \wedge t}, t \geq 0 \}$ is $\F_t$-martingale. \newline
+\note{Proof}: Take $s\leq t < \infty$. $\tau\wedge s, \tau\wedge t$ are bounded $\F_t$-stopping times. By II.22 we get $E[M_{\tau \wedge t} | \F_{\tau \wedge s}] = M_{\tau \wedge s} \;a.s.$. But we need $E[M_{\tau \wedge t}|\F_s] = M_{\tau \wedge s} \;a.s.$
+$$E[M_{\tau \wedge t} | \F_s ] = E[E (M_{\tau \wedge t}|\F_{\tau \wedge t})|\F_s] \stackrel{II.21}= E[M_{\tau\wedge t}|\F_{\tau \wedge t} \cap \F_s] \stackrel {II.16}= E[M_{\tau\wedge t} |\F_{\tau \wedge s}] = M_{\tau \wedge s}\; a.s.$$ \newline
+
+\note{Corollary II.24} Let $M$ be a continuous $\F_t$-martingale, $\nu \leq \tau$ $\F_t$-stopping times. Then for any $t\geq 0$
+$$E[M_{\tau \wedge t} | \F_\nu] = M_{\nu \wedge t} \; a.s.$$
+\note{Proof}: $$E[M_{\tau\wedge t} | \F_\nu] \stackrel{II.19}= E[E(M_{\tau \wedge t}| \F_{\tau \wedge t}) |\F_\nu] \stackrel{II.21,16}= E[M_{\tau\wedge t}| \F_{\nu\wedge t}] \stackrel{II.22}= M_{\nu\wedge t} \; a.s.$$
+
+\note{Remark}: This follows the concept of a fair game. If $M$ is the profit, then $EM_t = EM_0$, $\tau$ is a stopping rule, then $EM_{\tau \wedge t} = EM_0$ and $\lim_{t\to\infty} EM_{\tau \wedge t} = EM_\tau = EM_0$ if $\tau \leq T < \infty$ \newline
+\note{Remark}: $M$ is martingale, then $EM_t$ is constant and also $EM_\tau$ is constant for all bounded $\tau$ stopping times. The implication can also be reversed, as the following theorem will show. \newline
+
+\note{Theorem II.25} Let $M$ be a continuous $\F_t$-adapted process. If for any bounded $\F_t$-stopping time $\tau$ we have $M_\tau \in L(P)$ and $EM_\tau = EM_0$, then $M$ is $\F_t$-martingale. \newline
+\note{Proof}: $M$ is $\F_t$-adapted by assumption. \newline
+$E|M_t| < \infty$ by assumption, since $t$ is trivially bounded stopping time (I guess $L(P)$ here means integrable) \newline
+Now we'll choose a specific stopping time $\tau = s \cdot I_F + t \cdot I_{F^C}$ for some $F \in \F_s$ and we will check that $[\tau \leq u] \in \F_u \; \forall u$.
+$$[\tau \leq u] = \emptyset \; \forall u<s \quad [\tau\leq s] = F \in \F_s \quad [\tau \leq u] = F \in \F_s \subset \F_u \; \forall s < u < t \quad [\tau \leq u] = \Omega \; \forall u\geq t$$
+Now $E[M_\tau] = EM_0$ and 
+$$E[M_\tau] = EM_s \cdot I_F + EM_t \cdot I_{F^C}$$
+And lastly $EM_s = EM_t = EM_0$ ($\ast$) \newline
+We want to show that 
+$$\int_F M_t dP \stackrel ?= \int_F M_s dP$$
+$$EM_0 = \int_F M_0 dP + \int_{F^C} M_0 dP = \int_F M_s dP + \int_{F^C} M_t dP$$
+But thanks to $(\ast)$ we also have it equal to
+$$\int_F M_t dP + \int_{F^C} M_t dP$$
+Subtracting $\int_{F^C} M_t dP$ gives us the desired equality. \newline
+QED.
+
+\section{Continuous martingales, quadratic variation, Ito integral}
+\note{Definition III.1}: Stochastic process $A$ is called \textbf{increasing} ($\F_t$-increasing) if the paths of $A$ are a.s. finite\footnote{Over a bounded interval the increments are bounded}, right-continuous and non-decreasing. \newline
+Stochastic process $A$ is a process with finite variation if there exist two increasing processes $A^+$ and $A^-$ such that $A= A^+ - A^-$. \newline
+
+Almost all trajectories of increasing process or process with finite variation have finite variation over any finite interval. \newline
+$f$ function, $[a,b]$ interval, $\Delta$=partition of $[a,b]$, $\Delta \in \pi[a,b]$
+$$f^V(a,b) = \sup_{\Delta \in \pi(a,b)} \sum_{t_i \in \Delta} |f(t_i) - f(t_{i-1})|$$
+We have seen that Wiener process has finite quadratic variation which then means it has infinite variation over any interval $[a,b]$, $a<b$ \newline
+For $X$ continuous: \newline
+$X$ has finite variation $\Rightarrow X$ has quadratic variation $0$ \newline
+$X$ has quadratic variation positive, bounded $\Rightarrow$ $X$ has infinite variation \newline
+
+\note{Theorem III.2} Let $M$ be a continuous martingale. Then $M$ is a process with finite variation if and only if $M$ is constant\footnote{This seems to be a similar thing to predictable and measurable in discrete martingales} \newline
+\note{Proof}: Let $M$ have finite variation $TV_M$ (again process - function of $(\omega, t)$). $TV_M$ is continuous since $M$ is continuous. $M$ is trivially $\F^M_t$-adapted, $TV_M$ is also $\F^M_t$-adapted. \newline
+$\tau_n = \inf\{t\geq 0, TV_M(t) \geq n\}$, i.e. the hitting time of $[n,\infty) \Rightarrow \tau_n$ is $\F^M_t$-stopping time. Also $\tau_{n+1} \geq \tau_n$.\newline
+$TV_M$ is finite $\Rightarrow \tau_n \to \infty,\; a.s.$ as $n\to \infty$ \newline
+WLOG $M_0=0$ ($M_t = M_t - M_0$) \newline
+$\{M^{\tau_n}_t, t\geq 0\}$ process with bounded variation. 
+$$|M^{\tau_n}_t| \leq TV^{\tau_n}_M (t) \leq n \quad E|M^{\tau_n}_t |^2 < \infty \quad M^{\tau_n}_t \text{ is L2 martingale}$$
+For $L_2$-martingale: 
+$$E[M_t \cdot M_s| \F_s] \stackrel{s\leq t}= M^2_s = E[M^2_s | \F_s] \; a.s.$$
+$$E[(M_t - M_s)^2 |\F_s] = E[M_t^2 - 2M_t M_s + M_s^2 |\F_s] = E[M_t^2 - M_s^2 |\F_s] \; a.s.$$
+$$E(M^{\tau_n}_t)^2 = E \Big( \sum^k_{i=1} (M^{\tau_n}_{t_i})^2 - (M^{\tau_n}_{t_{i-1}})^2 \Big) = E \Big( \sum^k_{i=1} E[ (M^{\tau_n}_{t_i})^2 - (M^{\tau_n}_{t_{i-1}})^2|\F_{t_{i-1}}] \Big) $$
+$$=E\Big(\sum^k_{i=1} (M^{\tau_n}_{t_i} - M^{\tau_n}_{t_{i-1}})^2 \Big) \leq E\Big(\max_i | M^{\tau_n}_{t_i} - M^{\tau_n}_{t_{i-1}}| \cdot \sum^n_{i=1} |M^{\tau_n}_{t_i} - M^{\tau_n}_{t_{i-1}}|\Big)$$
+$$\max_i |M^{\tau_n}_{t_i} - M^{\tau_n}_{t_{i-1}} | \leq 2n$$
+since it doesn't depend on $t_0,\dots, t_k$, i.e. $\to 0$ if $\max(t_i - t_{i-1}) \to 0 $ (continuity of $M$)
+$$\sum^k_{i=1} |M^{\tau_n}_{t_i} - M^{\tau_n}_{t_{i-1}} | \leq TV^{\tau_n}_M(t) \leq n$$
+$\Rightarrow E(M^{\tau_n}_t)^2 = 0 \; \forall t\geq 0$. Use Doob's inequality to martingale $M^{\tau_n}_t$:
+$$E\sup_{0\leq s \leq t} (M^{\tau_n}_s)^2 ) \leq 4 \cdot E(M^{\tau_n}_t )^2 = 0 \Rightarrow \sup_{0\leq s \leq t} |M^{\tau_n}_s| = 0 \; a.s. \forall t \forall n$$
+$$M_s = \lim_{n\to \infty} M^{\tau_n}_s \; a.s. \Rightarrow M_s = 0\; a.s. \; \forall 0\leq s \leq t \; \forall t \Rightarrow \forall s \geq 0$$
+QED
+
+\subsubsection*{What about quadratic variation?}
+\note{Theorem II.3}: (Doob\footnote{Doob = Dub, origins in Czech!}-Meyer decomposition I) Let $M$ be a continuous BOUNDED $\F_t$-martingale. Then there exists a quadratic variation $\langle M \rangle$ of $M$ (finite) and it holds $M^2 - \langle M \rangle = \{M^2_t - \langle M \rangle_t, t\geq 0\}$ is $\F_t$-martingale. \newline
+If $A$ is any increasing process such that $A_0=0$ and $M^2-A$ is a martingale, then $A$ is a modification of $\langle M \rangle$
+
+Decomposition: $M^2 = N + \langle M \rangle$ where $N$ is a martingale and $\langle M \rangle$ is an increasing process. They are unique up to modification ($\langle M \rangle_0 = 0$) \newline
+Lastly, for $M^2$ submartingale we have the decomposition $M^2_t = N_t + \langle M\rangle_t$, where $N$ is a $\F_t$-martingale, $\langle M \rangle$ is a quadratic variation of $M$.
+
+\subsection*{Lecture 11 (4.4)}
+\note{Proof}: \textbf{Uniqueness}. Let $A$ be arbitraty increasing, $A_0 =0$, $M^2-A$ is a martingale. $M^2- \langle M \rangle$, $M^2-A$ are martingales (continuous). Then their difference
+$$(M^2 - \langle M \rangle) - (M^2 - A) = A-\langle M \rangle$$
+is a continuous martingale and a finite variation process. We also know (III.2) that $\langle M \rangle - A$ is a.s. constant, so here $\langle M \rangle - A = 0$ and thus $\langle M\rangle_t \as= A_t\;\; \forall t$  \newline
+\textbf{Existence}. Recall that 
+$$\langle M \rangle_t := P-\lim \sum_{t^n_i \in \Delta_n} \Big( M(t^n_{i+1}) - M(t^n_i) \Big)^2$$
+Take $\Delta = \{0=t_0  <t_1 \dots, t_n \to \infty\}$ and the $t\in [t_k, t_{k+1})$ and define
+$$V^2_\Delta (M,t) = \sum_{i=0}^{k-1} (t_{i+1} - t_i)^2 + (M_t - M_{t_k})^2 \quad t\geq 0$$
+And now let's look at its conditional expectation. Take $s \in [t_l, t_{l+1}]$ where $t+1 \leq k$
+\begin{align*}
+E(M^2_t - V^2_\Delta(M,t)|\F_s) &= E(M^2_t - M^2_s + M^2_s - V^2_\Delta(M,t) + V^2_\Delta(M, s) - \ub{V^2_\Delta(M,s)} _{\F_s-measurable} |\F_s) \\
+&= M^2_s - V^2_\Delta(M,s) + E\big(M^2_t - M^2_s - (V^2_\Delta(M,t) - V^2_\Delta(M,s)) \big| \F_s\big)
+\end{align*}
+Now look at
+\begin{align*} V^2_\Delta(M,t) - V^2_\Delta(M,s) & = \sum^{k-1}_{i=0} (M_{t_{i+1}} - M_{t_i})^2 - (M_t - M_{t_k})^2 - \sum^{l-1}_{i=l+1} (M_{t_{i+1}} - M_{t_i})^2 + (M_s - M_{t_l})^2 \\
+& = \sum^{k-1}_{i=0} (M_{t_{i+1}} - M_{t_i})^2 - (M_t - M_{t_k})^2 - (M_s - M_{t_l})^2 \\
+&= (M_{t_{l+1}} - M_{t_l})^2 - (M_s - M_{t_l})^2 + \ub{\sum^{k-1}_{i=l+1} (M_{t_{i+1}} - M_{t_i})^2}_{=0 if l+1 > k-1} + (M_t - M_{t_k})^2
+\end{align*}
+Furthermore
+$$E\big( (M_{t_{l+1}} - M_{t_l})^2 | \F_s \big) = E\big((M_{t_{l+1}} - M_s)^2 + 2\cdot (M_{t_{l+1}} - M_s)\ub{(M_s - M_{t_l})}_{\F_s -measurable} + \ub{(M_s - M_{t_k})^2}_{\F_s-measurable} | \F_s \big)$$
+$$= E\big( (M_{t_{l+1}} - M_s)^2| \F_s \big) + 2(M_s - M_{t_l}) \cdot \ub{E [ M_{t_{l+1}} - M_s | \F_s]}_{=0} + E\big((M_s - M_{t_l})^2 | \F_s\big) $$
+Using that we get
+$$E[V^2_\Delta(M,t) - V^2_\Delta (M,s) | \F_s ] = E\Big[ (M_{t_{l+1}} - M_s)^2 + \sum^{k-1}_{i=l+1} (M_{t_{i+1}} - M_{t_i})^2 + (M_t - M_{t_k})^2 \Big| \F_s\Big]$$
+Also we have
+$$E[(M_{t_{i+1}} - M_{t_i})^2 | \F_s] = E\Big[M^2_{t_{i+1}} - 2\cdot E[M_{t_{i+1}} M_{t_i}| \F_{t_i}] + M^2_{t_i} \Big| \F_s \Big] = E[M^2_{t_{i+1}} - M^2_{t_i} | \F_s]$$
+$$E[V^2_\Delta(M,t) - V^2_\Delta(M,s) |\F_s] = E[M^2_t - M^2_{t_k} + \sum^{k-1}_{i=l+1} M^2_{t_{i+1}} - M^2_{t_i} + M^2_{t_{l+1}} - M^2_s | \F_s] = E[M^2_t - M^2_s | \F_s]$$
+If we go all the way back, this gives us
+$$E(M^2_t - V^2_\Delta(M,t)|\F_s) = M^2_s - V^2_\Delta(M,s)$$
+and thus $M^2-V^2_\Delta(M)$ is a continuous martingale. But we don't know about whether it is increasing, since $\sum^{k-1}_{i=0} (M_{t_{i+1}} - M_{t_i})^2 + (M_t - M_{t_k})^2$ where the second term need not be increasing in $t$. \newline
+From that we get uniform integrability: For any $T>0$ the family of r.v.s $\{M^2_t - V^2_\Delta(M,t), 0 \leq t < T \}$ is uniformly integrable (follows from the fact that it is a continuous martingale) \newline
+Having $\{\Delta_n\}$ sequence of partitions s.t. $\|\Delta_n\| \to 0, n \to \infty$ we want to show $\{V^2_{\Delta_n}(M,t)\}$ is a Cauchy sequence. \newline
+Take $\Delta_1, \Delta_2$ two partitions, assume $t\in \Delta_1, t\in \Delta_2$ (need not be true, but simplification for notation..). Take $\Delta = \Delta_1 \cup \Delta_2$. We know that $M^2 - V^2_{\Delta_1} (M), M^2 - V^2_{\Delta_2} (M)$ are martingales. Then also
+$$D = V^2_{\Delta_1} (M) - V^2_{\Delta_2} (M)$$
+is a martingale. Using the same argument as above:
+$$ED_t^2 = E\big(V^2_{\Delta_1} (M,t) - V^2_{\Delta_2}  (M,t)\big)^2 = EV^2_\Delta(D,t)$$
+Take $t_i, t_{i+1} \in \Delta$ and we'll look at just one increment
+\begin{align*}\big(V^2_{\Delta_1} (M, t_{i+1}) - V^2_{\Delta_1}(M, t_i) - V^2_{\Delta_2}(M, t_{i+1}) + V^2_{\Delta_2}(M, t_i)\big)^2 \leq  &2 \big(V^2_{\Delta_1}(M, t_{i+1}) - V^2_{\Delta_1}(M, t_i)\big)^2 \\ &+ \big(V^2_{\Delta_2}(M, t_{i+1}) - V^2_{\Delta_2}(M, t_i)\big)^2
+\end{align*}
+Hence
+$$V^2_\Delta(D,t) = V^2_\Delta\big( V^2_{\Delta_1} (M,t) - V^2_{\Delta_2} (M,t)\big) \leq 2 V^2_\Delta(V^2_{\Delta_1} (M), t) + 2V^2_\Delta(V^2_{\Delta_2}(M), t)$$
+We want $\| \Delta_1 \| + \|\Delta_2\| \to 0 \Rightarrow ED^2_t \to 0$. It is sufficient to prove that $EV^2_\Delta(V^2_{\Delta_1}(M), t) \to 0$ \newline
+Take $s_k \in \Delta$, $t_i \in \Delta_1$ such that $t_i \leq s_k < s_{k+1} \leq t_{i+1}$. Let us now take
+$$V^2_{\Delta_1} (M, s_{k+1}) - V^2_{\Delta_1}(M, s_k)$$
+Where
+$$V^2_{\Delta_1} (M, s_{k+1}) = \sum(M_{t_{i+1}} - M_{t_i})^2 + (M_{s_{k+1}} - M_{t_i})^2$$
+and
+$$V^2_{\Delta_1}(M, s_k) = \sum(M_{t_{i+1}} - M_{t_i})^2 + (M_{s_{k}} - M_{t_i})^2$$
+and thus
+\begin{align*}V^2_{\Delta_1} (M, s_{k+1}) - V^2_{\Delta_1}(M, s_k) & = (M_{s_{k+1}} - M_{t_i})^2 - (M_{s_k} - M_{t_i})^2 \\
+&= M^2_{s_{k+1}} - M_{s_k}^2 - 2 M_{s_{k+1}} M_{t_i} + 2 M_{s_k} \cdot M_{t_i}\\
+& =  (M_{s_{k+1}} - M_{s_k}) (M_{s_{k+1}} + M_{s_k}) - M_{t_i}(M_{s_{k+1}} - M_{s_k}) \\
+&= (M_{s_{k+1}} - M_{s_k})(M_{s_{k+1}} + M_{s_k} - 2M_{t_i})
+\end{align*}
+Now, $t = s_m$
+\begin{align*}
+V^2_\Delta(V^2_{\Delta_1} (M), t) &= \sum^{m-1}_{i=0} (V^2_{\Delta_1} (M, s_{i+1}) - V^2_{\Delta_1} (M, s_i))^2 \\
+& = \sum^{k-1} (M_{s_{i+1}} - M_{s_i})^2 (M_{s_{i+1}} + M_{s_i} - 2 M_{t_k})^2 \\
+& \leq \sup_{i=0, \dots, m-1} (M_{s_{i+1}} + M_{s_i} - 2M_{t_k})^2 V^2_{\Delta} (M,t)
+\end{align*}
+\begin{align*}EV^2_\Delta (V^2_{\Delta_1} (M), t) &\leq E\Big[ \sup_i (M_{s_{i+1}} + M_{s_i} - 2M_{t_k})^2 \cdot V^2_\Delta(M,t) \Big]\\
+& \stackrel{Holder p=q=2} \leq \ub{\Big(E \ub{\sup (M_{s_{i+1}} + M_{s_i} - 2M_{t_k})^4}_{\leq (4k)^2}\Big)^{1/2}}_{M\text{ continuous }\to 0} \cdot \ub{\Big[ E(V^2_\Delta(M,t))^2 \Big]^{1/2}}_{\text{Bounded for }\Delta ?}
+\end{align*}
+Where we used the fact that $M$ is bounded, say $|M| < k\; \forall t\geq 0$. So now we only need to solve the term on the right, because then we get $\to 0$ as $\|\Delta_1\| + \|\Delta_2\| \to 0$. Let's explore the term (still, $t=s_m$)
+$$(V^2_\Delta (M,t))^2 = \Big(\sum^{m-1}_{i=0} (M_{s_{i+1}} - M_{s_i})^2\Big)^2 = \sum_i (M_{s_{i+1}} - M_{s_i})^4 + 2 \sum^{m-2}_{i=0}\sum^{m-1}_{j=i+1} (M_{s_{i+1}} - M_{s_i})^2(M_{s_{j+1}} - M_{s_j})^2$$
+$$ = \sum^{m-1}_{i=0} (M_{s_{i+1}} - M_{s_i})^4 + 2\cdot \sum^{m-2}_{i=0} (M_{s_{i+1}} - M_{s_i})^2(V^2_\Delta (M, s_m) - V^2_\Delta(M, s_{i+1}))$$
+And as to expectation
+$$E(V^2_\Delta(M,t))^2 = E(\sum^{m-1}_{i=0} (M_{s_{i+1}} - M_{s_i})^4) + 2\sum^{m-2}_{i=0} E(M_{s_{i+1}} - M_{s_i})^2(V^2_\Delta (M, s_m) - V^2_\Delta (M, s_{i+1})) E[(M_{s_{i+1}} - M_{s_i})^2 \cdot E(V^2_\Delta (M, s_m) - V^2_\Delta(M, s+1)| \F_{s_{i+1}} ]$$
+And in the sum, the left part of the product
+$$= E \sum^{m-1}_{i=0} M_{s_{i+1}} $$
+sth, he deleted that, gotta add it. 
+ \newline
+ And so
+ $$\leq E[(\ub{\sup_{i} (M_{s_{i+1}} - M_{s_i})^2}_{\leq 4k^2} + \ub{2 \sup_i (M_{s_m} - M_{s_{i+1}})^2}_{2\cdot 4k^2}) + \sum^{m-1}_{i=0} (M_{s_{i+1}} - M_{s_i})^2 \leq 12 \cdot k^2 \ub{EV^2_\Delta(M_t)}_{E(M^2_ - M^2_0) \leq 4k^2}$$
+Thus 
+$$EV^2_\Delta (M, t) \leq 48 k^4 \quad \forall t, \forall \Delta$$
+$$(V^2_{\Delta_1} (M,t) - V^2_{\Delta_2} (M,t) ) \stackrel{L_2, P}\to 0 \;\; as \;\; \|\Delta_1 \| + \| \Delta_2\| \to 0$$
+
+$$E\sup_{0\leq t \leq T} (V^2_{\Delta_1}(M,t) - V^2_{\Delta_2} (M,t))^2 \leq 4 E(V^2_{\Delta_1}(M,T) - V^2_{\Delta_2}(M,T))^2 \to 0$$
+%$$\sup_{0 \leq t \leq T} |V^2_{\Delta_1 (M,t) - V^2_{\Delta_2} (M,t) | \stackrel P\to 0$$
+I.e. $\Rightarrow$ there is a continuous limit $\langle M\rangle_t, t\in [0,T]\; \forall T\geq 0$. Furthermore 
+%$$\forall s,t \in \Delta: \quad V^2_\Delta(M,s) \leq V^2_\Delta(M,t), s\leq t$$
+%$$\|\Delta_n \| \to \quad s,t \in \bigcup_n \Delta_n,\; s\leq t \Rightarrow \langle M \rangle_s \leq \langle M \rangle_t$$
+Where the union is a dense set and the quadratic variation is continuous. Thus we get
+%$$\forall s\leq t : \quad \langle M \rangle_s \leq \langle M \rangle_t (monoticity)$$
+%$$E(M^2_t - V^2_{\Delta}(M, t) | \F_s) \stackrel P\to E(M^2_t - \langle M\rangle_t | \F_s)$$
+martingale property
+%$$M^2_s - V^2_\Delta(M,s) \stackrel P\to M^2_s - \langle M \rangle_s$$
+QED (gotta clean this up and fill in stuff)
+
+\subsection*{Lecture 12 (5.4)}
+Last lecture: If $M$ is bounded continuous $\F_t$-martingale, then $M^2 - \langle M \rangle$ is continuous $\F_t$-martingale and $\langle M \rangle$ is unique continuous finite variation process, $\langle M \rangle_0 = 0$ with this property. \newline
+If we have $M,N$ two bounded continuous martingales, then $M+N, M-N$ are bounded continuous martingales (prove this!). \newline
+
+\note{Definition III.4}: Let $M,N$ be processes with finite quadratic variation. Then the \textbf{covariation process} $\langle M, N \rangle$ is defined as
+$$\langle M,N \rangle = \frac 14 ( \langle M+N \rangle - \langle M-N\rangle)$$
+
+Let us check that the covariation process is well-defined. The quadratic variations are P-limits of quadratic increments, i.e.
+\begin{align*}\langle M,N \rangle&= \frac 14 ( \langle M+N \rangle - \langle M-N\rangle) \\
+&= \frac 14 P-\lim \sum^{n-1}_{i=0}\big(M_{t_{i+1}} + N_{t_{i+1}} - (M_{t_i} + N_{t_i})\big)^2  - \sum^n_{i=0} (M_{t_{i+1}} - N_{t_{i+1}} - (M_{t_i} - N_{t_i}))^2 \\ 
+\end{align*}
+The respective terms are:
+\begin{align*} 
+& M^2_{t_{i+1}} + N_{t_{i+1}}^2 + M^2_{t_i} + N_{t_{i}} \\
+&+ 2M_{t_{i+1}} N_{t_{i+1}} - 2M_{t_{i+1}}N_{t_{i}}\\
+&-2M_{t_{i+1}} N_{t_{i}} - 2M_{t_{i}}N_{t_{i+1}}\\
+&-2N_{t_{i+1}} N_{t_{i}} + 2M_{t_{i}}N_{t_{i}}\\
+\end{align*}
+The second one:
+\begin{align*} 
+& M^2_{t_{i+1}} + N_{t_{i+1}}^2 + M^2_{t_i} + N_{t_{i}} \\
+&- 2M_{t_{i+1}} N_{t_{i+1}} - 2M_{t_{i+1}}N_{t_{i}}\\
+& +2M_{t_{i+1}} N_{t_{i}} + 2M_{t_{i}}N_{t_{i+1}}\\
+&-2N_{t_{i+1}} N_{t_{i}} - 2M_{t_{i}}N_{t_{i}}\\
+\end{align*}
+And subtracting them we get
+\begin{align*} &= \frac 14 P-\lim \sum 4 M_{t_{i+1}} N_{t_{i+1}} - 4 M_{t_{i+1}} N_{t_{i}} - 4 M_{t_{i}} N_{t_{i+1}}  + 4 M_{t_{i}} N_{t_{i}} \\
+& = P-lim \sum^{n-1}_{i=0} (M_{t_{i+1}} - M_{t_i})(N_{t_{i+1}} - N_{t_i}) 
+\end{align*}
+ Using this last representation, one can easily see the following properties \begin{itemize}
+ \item $\langle X,Y \rangle = \langle Y, X \rangle$
+ \item $\langle aX, Y \rangle = a \langle X,Y \rangle$
+ \item $\langle X+Z , Y \rangle = \langle X, Y \rangle + \langle Z, Y \rangle$
+ \item $\langle X, X \rangle = \langle X \rangle$
+ \item If $A$ has finite variation and $M$ is continuous with finite $\langle M \rangle$ and then $\langle A, M \rangle = 0$ (because bounded $\times$ zero)
+ \end{itemize}
+ 
+ \note{Corollary III.5} Let $M,N$ be bounded continuous $\F_t$-martingales. Then $M\cdot N - \langle M, N\rangle$ is continuous $\F_t$-martingale and if there is any process $A$ with finite vartiation $A_0 = 0$ such that $M\cdot N - A$ is a martingale, then $A$ is a modification of $\langle M, N \rangle$ \newline
+ \note{Proof:}
+ $$M\cdot N = \frac 14 ((M+N)^2 - (M-N)^2)$$
+ $$MN - \langle M,N\rangle = \frac 14 \Big[ (\ub{(M+N)^2 - \langle M+N \rangle}_{martingale} ) - (\ub{(M-N)^2 - \langle M-N\rangle }_{martingale})\Big]$$
+Lastly
+$$(M\cdot N - A) - (M\cdot N - \langle M, N \rangle ) = \langle M, N \rangle - A $$
+is a continuous martingale with finite variation and thus constant a.s. = 0 \newline
+QED 
+
+\subsubsection*{Stochastic integral}
+We want to define 
+$$\int X \; dW$$
+But $W$, the Wiener process has infinite variation overr any interval, i.e. $W(\omega)$ for almost all $\omega$'s. Thus $dW(\omega)$ has no sense in the classical Lebesgue measure theory. We will thus begin with defining the class of simple processes. \newline
+
+\note{Definition III.6} Let $\{\F_t\}$ be a filtration. $X$ is $\F_t$\textbf{-simple process} ($X \in \mathcal S(\F_t)$) if
+$$X_t = \xi_0 I_{\{0\}} + \sum^\infty_{i=0} \xi_i I_{(t_i < t \leq t_{i+1})}$$
+where $0=t_0 < t_1 < \dots, t_n \nearrow \infty$ as $n\to \infty$ and $\xi_i$ is $\F_t$-measurable $\forall i \in \{0, 1,\dots \}$ and the partition $t_0, t_1,\dots$ does not depend on $\omega$. \newline
+Notice the process is left-continuous\footnote{the left end point continuity is very important, because thanks to that we get the $\F_t$-adapted property!}, $\F_t$-adapted and thus it is $\F_t$-progressively measurable. \newline
+
+\note{Definition III.7} Let $X$ be a $\F_t$-simple process, $W$ $\F_t$-Wiener process. Define
+$$\int^t_0 X dW = \sum^{k-1}_{i=0} \xi_i (W_{t_{i+1}} - W_{t_i}) + \xi_k (W_t - W_{t_k}) \; \text{ for } t_k \leq t < t_{k+1}$$
+Notice that the random variable $\int^t_0$ is $\F_t$-measurable. \newline
+The map $t \mapsto \int^t_0 X \; dW$ is continuous \newline
+The map $X \mapsto \int^t_0 X \; dW$ is a linear map on $\mathcal S(\F_t)$ \newline
+$\int^t_0 1 \; dW = W_t - W_0 = W_t$ \newline
+
+\pagebreak Denote $\mathcal S_2(\F_t) \subset \mathcal S(\F_t)$ such that $E\xi^2_i < \infty \; \forall i=0,1,\dots$. Then we get the following theorem \newline
+\note{Theorem III.8} Let $X \in \mathcal S_2(\F_t)$ and $W$ be $\F_t$-Wiener process, then 
+$$\int X \; dW = \Big\{ \int^t_0 X \; dW, t\geq 0\Big\} \text{ is }L_2 \text{ martingale}$$
+$$E\int^t_0 X \; dW = 0$$
+and 
+$$E\Big(\int^t_0 X \; dW \Big)^2 = E \int^t_0 X^2_s ds$$
+\note{Proof}: We already have $\int^t_0 X \; dW$ is $\F_t$-measurable \newline
+$$E\Big(\int^t_0 X \; dW \Big)^2 < \infty ?$$
+\begin{align*}
+E\Big( &\sum^{k-1}_{i=0} \xi_i (W_{t_{i+1}} - W_{t_i}) + \xi_k (W_t - W_{t_k}) \Big)^2 \\
+& = E \Big(\sum^{k-1}_{i=0} \xi^2_i (W_{t_{i+1}} - W_{t_i})^2 + \xi^2_k (W_t - W_{t_k})^2 + 2 \sum^{k-2}_{i=0} \sum^{k-1}_{j=i+1} \ub{\xi_i \xi_j (W_{t_{i+1}} - W_{t_i})}_{\F_{t_j}-measurable}\ub{(W_{t_{j+1}} - W_{t_j})}_{\F_{t_j}-independent} + \\
+& + 2 \sum^{k-1}_{i=0} \ub{\xi_i \xi_k  (W_{t_{i+1}} - W_{t_i})}_{\F_{t_j}-measurable}\ub{(W_{t} - W_{t_k})}_{\F_{t_j}-independent} \\
+% & = E\Big(\sum^{k-1}_{i=0}\ub{ \xi^2_i}_{\F_{t_i}measurable} \ub_{(W_{t_{i+1}} - W_{t_i})}_{\bot \F_{t_i}}^2 + \ub{\xi_k^2}_{\F_{t_k}} \ub{(W_t - W_{t_k})}_{\bot \F_{t_k}}^2 \Big) \\
+&= \sum^{k-1} E \xi_i^2 \cdot (E(W_{t_{i+1}} - W_{t_i})^2 +E \xi_k^2 \cdot (E(W_{t} - W_{t_t})^2 \\
+& = E\Big( \sum^{k-1}_{i=0} \xi^2_i (t_{i+1} - t_i) + \xi^2_{k} (t-t_k)\Big) \\
+& = E\int^t_0 X^2_s \; ds
+\end{align*}
+
+To simplify notation, assume $s=t_l$ and $t = t_k$
+\begin{align*} E\Big[ \int^t_0 X\; dW | \F_s] &= E \Big[\sum^{k-1}_{i=0} \xi_i (W_{t_{i+1}} - W_{t_i} ) |\F_s \Big] \\
+& = E \Big[ \sum^{l-1}_{i=0} \xi_i (W_{t_{i+1}} - W_{t_i} ) + \sum^{k-1}_{i=l} \xi_i (W_{t_{i+1}} - W_{t_i} ) \Big| \F_s \Big] \\
+& \as= \int^s_0 X \; dW + E\Big[\sum^{k-1}_{i=l} \xi_i (W_{t_{i+1}} - W_{t_i} ) \Big| \F_s \Big] \\
+&= \int^s_0 X \; dW + E\Big[\sum^{k-1}_{i=l} E\big[\xi_i (W_{t_{i+1}} - W_{t_i} )|\F_{t_i}\big] \Big| \F_s \Big] \\
+&\as= \xi_i E(W_{t_{i+1}} - W_{t_i}) = 0
+\end{align*}
+Since $\xi_i$ is $\F_{t_i}$ measurable. \newline
+Hence $E(\int^t_0 X dW) = constant = E(\int^0_0 X dW) = 0$ \newline
+
+We know that if $X,Y$ are continuous $L_2$-martingale, we get (Doob's inequality)
+$$E\Big(\sup_{0\leq s \leq t} (X_s - Y_s)^2 \Big) \leq 4 E(X_t - Y_t)^2$$
+i.e. we get boundedness on the whole interval $[0,t]$. This serves as a motivation for the following definition. \newline
+\note{Definition III.9}: Denote $CM_2(\F_t)$ the set of continuous square integrable $\F_t$-martingales. Define
+$$m(M, N) = \sum^{\infty}_{n=1} 2^{-n} \big(1 \wedge \ub{[E(M_n - N_n)^2]^{1/2}}_{\| M_n - N_n\|_{L_2(P)}} \big)$$
+Note that $m(M,N) \to 0 \iff E(M_n - N_n)^2 \to 0 \; \forall n$ and thus $\sup_{0\leq s \leq n} (M_s - N_s)^2 \stackrel{L_2}\to 0$ thanks to the inequality above. \newline
+
+Let us now try the definition on the simple stochastic integral, $X,Y \in \mathcal S_2(\F_t)$
+\begin{align*}m\Big(\int X dW, \int Y dW \Big) &= \sum^\infty_{n=1} 2^{-n} ( 1 \wedge \Big(E\Big(\int^n_0 X dW - \int^n_0 Y dW\Big)^2\Big)^{1/2} \\
+&= \sum^\infty_{n=1} 2^{-n} ( 1 \wedge \Big(\ub{E\Big(\int^n_0 X-  Y dW}_{=E\int^n_0 (X_s - Y_s) ds}\Big)^2\Big)^{1/2} \\
+&= \sum^\infty_{n=1} 2^{-n} ( 1 \wedge \Big(E\Big(\int^n_0 (X_s - Y_s)^2 ds \Big)^{1/2} \\
+\end{align*}
+\note{Definition III.10} Denote $L_2(\F_t)$ a set of $\F_t$-progressively measurable processes such that $X\in L_2(\F_t)$ it holds $E\int^t_0 X_s^2 ds < \infty \; \forall t\geq 0$. \newline
+Define 
+$$l(X,Y) = \sum^{\infty}_{n=1} 2^{-n} \Big[ 1 \wedge \Big( E\int^t_0 (X_s - Y_s)^2 ds\Big)^{1/2} \Big]$$
+a metric on $L_2(\F_t)$ \newline
+
+Note that for simple processes $X,Y$ we have
+$$\ub{m\Big(\int X dW, \int Y dW \Big)}_{\text{Metric on } CM_2(\F_t)} = \ub{l (X,Y)}_{\text{metric on }L_2(\F_t)}$$
+This is the so-called \textbf{Ito-isometry}
+
+
+\subsection*{Lecture 13 (11.4)}
+\note{Theorem III.11} Let $\{\F_t\}$ be a complete filtration. Then the space ($CM_2(\F_t), m)$ is complete. \newline
+\note{Proof}: Let $M_n$ Cauchy seqeuence in $CM_2(\F_t)$ in metric $m$, i.e.	$$m(M_n, M_m) \to 0, m,n\to \infty$$
+or alternatively
+$$\forall \epsilon >0 \; \exists n_0: m,n\geq n_0 \; m(M_m, M_n) < \epsilon$$
+In particular: 
+$$E\sup_{0\leq s \leq t} |M_{m,s} - M_{n,s}|^2 \leq 4\cdot E|M_{m,t} - M_{n,t}|^2 \to 0$$
+$$\sup_{0\leq s \leq t} |M_{m,s} - M_{n,s}| \stackrel{P}\to 0 \text{ uniform convergence}$$
+Thus $\exists k_n$ subsequence such that
+$$\sup_{0\leq s \leq t} |M_{k_m,s} - M_{k_n, s}| \stackrel{a.s.} \to 0$$
+for almost all $\omega$'s  we have uniform convergence of $M_{k_n,s}$ (continuous) over $s\in [0,t]$ \newline
+There exists $M(\omega)$ continuous (thanks to uniform convergence) limit of $M_{k_n, s}(\omega)$ on $[0,t]$ $\forall t \Rightarrow \forall t \in [0,\infty)$ \newline
+We have a continuous limit. 
+$$M_s \as = \lim_{n\to \infty} \ub{M_{k_n, s}}_{\F_t-measurable}$$
+and $\F_t$ contains all $P$-null sets. 
+$$EM_t^2 = E(M_t - M_{n,t} + M_{n,t})^2 \leq 2 \ub{E(M_t - M_{n,t})^2}_{\to 0} + 2 EM^2_{n,t} < \infty$$
+$$E[M_t |\F_s] = M_s \; a.s. \; s\leq t$$
+\begin{align*}
+E\Big( E[M_t | \F_s] - M_s \Big)^2 &= E \Big[ E[M_t |\F_s] \ub{- E[M_{n,t} |\F_s ] + M_{n,s}}_{\as = 0} - M_s \Big]^2 \\
+&\leq 2 E\Big( E[M_t - M_{n,t}| \F_s] \Big)^2 + 2E(M_{n,s} - M_s\Big)^2  \\
+&\leq 2\ub{E ( E[(M_t - M_{n,t})^2 |\F_s])}_{E[M_t - M_{n,t}]^2 \to 0} + 2\ub{E(M_{n,s} - M_s)^2}_{\to 0}
+\end{align*}
+
+\note{Theorem III.12}: The set of simple square integrable processes is dense in $L_2(\F_t)$ (w.r.t the metric $l$). That is 
+$$\overline{\mathcal S_2}(\F_t) = L_2(\F_t)$$
+\note{Proof}: We want to show or any $X\in L_2(\F_t)$ that there is $\{X_n\} \in \mathcal S_2(\F_t)$ such that
+$$l(X,X_n) \to 0, n \to \infty$$
+We will do so in three steps: \begin{enumerate}
+\item $X$ may be approximated by a BOUNDED process (in $L_2(\F_t)$)
+$$Y_n = X\cdot I_{\{|X| \leq n \}}$$
+$$l(X,Y_n) = \sum^\infty_{k=1} 2^{-k} (1 \wedge (E \int^k_0 (X-Y_n)^2 ds )^{1/2} )$$
+$$E\int^k_0 (X-Y_n)^2 ds = \ub{E\int^k_0 X^2 \cdot I_{[|X|\geq n]} ds}_{<\infty \text{ as } E\int^k_0 X^2_s ds < \infty}=\int^k_0 EX^2_s \cdot I_{|X_s| \geq n ]} ds$$
+$EX^2_s < \infty \Rightarrow EX^2_s \cdot I_{[|X_s| \geq n ]} \to 0, n\to \infty$
+
+\item Bounded process $Y\in L_2(\F_t)$ may be approximated by a bounded CONTINUOUS process
+$$Z_{n,t} = 2^n \int^t_{(t-2^{-n})\vee 0} Y_s ds \quad\text{ is a continuous process}$$
+We have
+$$|Y| \leq b \Rightarrow |Z_n| \leq b \quad \forall t\geq 0$$
+And thus
+$$E\int^k_0 \ub{(Z_{n,s} - Y_s)^2}_{\leq 4b^2} ds$$
+And by the essential theorem of calculus
+$$f\text { measurable, integrable}: \int^t_{t-2^{-n}} f(s) ds \stackrel{n\to \infty}\to f(t) \quad \text{for almost all }t$$
+A proof idea:
+$$\ub{\frac{F(t) - F(t- 2^{-n})}{2^{-n}}}_{\to F'(t) = f(t) \text{ a.e.}} = 2^n \cdot \int^t_{t-2^{-n}} f(s) ds$$
+$$E\int^k_0 \ub{(Z_{n,s}-Y_s)^2}_{\to 0} ds \to 0$$
+
+\item Bounded continuous function $Z \in L_2(\F_t)$ may be approaximted by a SIMPLE process
+$$\Pi_n = \{0=t_0 < t_1 = \frac 1{2^n} <\cdots < t_i = \frac i{2^n}\}$$
+$$U_{n,t} = Z_0 \cdot I_{[t=0]} + \sum^\infty_{k=0} \ub{Z_{t_k}}_{|\cdot| \leq b} \cdot I_{( t_k < t < t_{k+1}]}$$
+This is $\F_t$-measurable and square integrable and it is a simple process. Lastly,
+$$U_{n,t} \to Z_t \; \forall t \; n \to \infty,\;\; |U_{n,t} - Z_t| \leq 2b$$
+Gives us 
+$$E \int^k_0 (U_{n,t} - Z_t)^2 dt \to 0$$
+\end{enumerate}
+
+\note{Theorem III.13}: Let $X \in L_2 (\F_t)$. Then there exists a unique (up to modification) martingale $M\in CM_2(\F_t)$ such that 
+$$\text{for any sequence }\{X_n\} \subset \mathcal S_2(\F_t), X_n\stackrel{l}\to X \text{ it holds } m(M, \int X_n dW) \to 0$$
+\note{Proof} From III.12 there is $X_n \stackrel l\to X$ (for any $X\in L_2(\F_t)$)
+$$m\Big( \int X_n dW, \int X_m dW \Big) = l (X_n, X_m) \to 0$$
+$\{ \int X_n dW \}$ is a Cauchy sequence in ($CM_2(\F_t), m$) $\stackrel{\text{III.11}}\to \exists$ limit $M\in CM_2(\F_t)$
+$$\int X_n dW \stackrel{m}\to M$$
+Take $Y_n \stackrel{l}\to X$ and $\int Y_n dW \stackrel{m}\to N$
+$$m\Big(\int X_n dW, \int Y_n dW \Big) = l(X_n, Y_n) \to 0 \text{ since } X_n \stackrel l\to X, Y_n \stackrel l\to X$$
+$$\int X_n dW \stackrel m\to M \quad \int Y_n dW \stackrel m\to M$$ 
+QED \newline
+
+The martingale $M$ of Theorem III.13 is called the \textbf{Ito stochastic integral of X}(w.r.t. $W$) \newline
+$X$ is a simple process, then
+$$\int^t_0 X dW = \sum^{k-1}_{i=0} X_{t_i} (W_{t+1} - W_{t_i}) + X_{t_k} (W_t - W_{t_k}) \quad X_t = X_0 \cdot I_{[t=0]} + \sum^\infty_{i=0} X_{t_i} \cdot I_{(t_i < t \leq t_{i+1})}$$
+This is called the martingale transform. \newline
+For $X,Y$ simple 
+$$m\Big(\int X dW, \int Y dW \Big) = l(X,Y)$$
+$X \in L_2(\F_t)$: $\int X dW$ is $\mathcal L_2$ limit of stochastic integrals $\int X_n dW, l (X_n, X)\to 0, X_n \in \mathcal S_2(\F_t)$ \;
+
+\note{Theorem III.14}: Let $X,Y \in L_2(\F_t)$. Then $\forall 0 \leq s \leq t < \infty$ \begin{enumerate}
+\item[(i)] $ \int aX + Y dW = a\int XdW + \int y dW$
+\item[(ii)] $$E\Big(\int^t_0 X dW\Big)^2 = E\Big(\int^t_0 X^2 ds \Big)$$
+\item[(iii)] $$E\Big(\big(\int^t_s X dW\big)^2 \Big| \F_s \Big) = E \Big(\int^t_s X_n^2 dn \Big|\F_s \Big)$$ where $$\int^t_s X dW = \int^t_0 XdW - \int^s_0 XdW = \int^t_0 I_{[u\geq s]} X_u dW$$
+\end{enumerate}
+\note{Proof}: We know  that for simple processes $X_n, Y_n$
+$$\int X_n + Y_n dW = \int X_n dW + \int Y_n dW$$
+$$l(X_n, X) \to 0, l(Y_n, Y) \to 0, l(X_n+ Y_n, X +Y) \to 0$$
+$$m\big( \int X_n dW, \int X dW \big) \to 0, m\big( \int Y_n dW, \int Y dW \big) \to 0, m\big( \int X_n + Y_n dW, \int X+Y dW \big) \to 0$$
+$$m\big( \int X_n +Y_n dW, \int X_n dW + \int Y_n dW \big) \to 0$$
+Altogether, we get
+$$m\big( \int X + Y dW, \int X dW + \int Y dW \big) \leq m\big( \int X + Y dW, \int X_n + Y_n dW \big) + m\big( \int X_n + Y_n dW, \int X_n dW + \int Y_n dw \big) $$
+$$+m(\int X_n dW + \int Y_n dW, \int X dW + \int Y dW) \to 0$$
+$$E( \int^k_0 X dW + \int^k_0 Y dW - \int^k_0 X_n dW - \int^k_0 Y_n dW)^2 \leq 2 \cdot E(\int^k_0 X dW - \int^k_0 X_n dW) + 2 E(\int^t_0 Y dW - \int^k_0 Y_n dW)^2$$
+$$E\Big(\int^t_0 X dW \Big)^2 = E(\int^t_0 X-X_n + X_n dW)^2 = E(\int^t_0 X - X_n dW + \int^t_0 X_n dW)^2$$
+$$=\ub{E(\int^t_0 X- X_n dW)^2}_{\to 0} + 2 \ub{E( \int^t_0 (X- X_n) dW \int^t_0 X_n dW)}_{Holder \to 0} + \ub{E(\int^t_0 X_n dW)^2}_{= E\int^t_0 X_n^2 ds}$$
+$$E\int^t_0 X^2 ds = E \int^t_0 (X- X_n + Y_n)^2 ds = E\ub{\int^t_0 (X-X_n)^2 ds}_{\to 0} + 2 E\ub{ \int^t_0 (X - X_n) \cdot X_n}_{Holder \to 0} ds + E\int^t_0 X_n^2 ds$$  
+(iii)
+$$\int_A (\int^t_s X dW)^2 dP = \int_a (\int^t_s X^2 ds) dP$$
+But
+$$E(\int^t_0 \ub{I_{[s\leq u]} \cdot I_A}_{L^2(\F_t)} \cdot X dW)^2 = E(\int^t_0 I_{[s\leq u]} \cdot I_A \cdot X^2 ds)$$
+
+
+\subsection*{Lecture 14 (12.4)}
+\note{Theorem III. 15}: Let $X,Y \in L_2(\F_t)$, then
+$$E\int X dW = 0, E\Big( \int^t_0 X dW \int^t_0 Y dW \Big) = E\int^t_0 XY ds$$
+and
+$$\Big(\int X dW \Big)^2- \int X^2 ds, \; \int X dW \cdot \int Y dW - \int X Y ds \text{ are martingales }$$
+\note{Proof}: $M = \int X dW$ is a martingale, $EM_t$ = constant, $M_0 \as = 0 \Rightarrow EM_t = E\int^t_0 X dW = 0$ \newline
+For simple processes $X,Y$ we may write
+$$\int^t_0 X dW \cdot \int^t_0 Y dW - \sum^{k-1}_{i=0} \xi_i (W_{t_{i+1}} - W_{t_i} ) \cdot \sum^{k-1}_{i=0} \eta_i ( W_{t_{i+1}} - W_{t_i})$$
+Where $t=t_k, \xi_i, \eta_i$ are $\F_{t_i}$-mesaurable
+$$= \sum^{k-1}_{i=0} \xi_i \eta_i (W_{t_{i+1}} - W_{t_i} )^2 + \sum_{i\neq j} \xi_i \eta_i (W_{t_{i+1}} - W_{t_i} )(W_{t_{j+1}} - W_{t_j} )$$
+For $X,Y$ simple we get
+$$E \int^t_0 X dW \int^t_0 Y dW = \stackrel{\text{as in III.8}}\cdot = E\int^t_0 X\cdot Y ds$$
+Now: there exist $X_n, Y_n$ simple such that $m(\int X_n dW, \int X dW) + m(\int Y_n dW, \int Y dW) \to 0$ and thus
+\begin{align*} E \Big( \int X dW \cdot \int Y dW \Big) &= E \Big( \int^t_0 X - X_n + X_n dW \cdot \int^t_0 Y - Y_n + Y_n dW\Big)\\
+& = E \Big(\int^t_0 X - X_n dW \cdot \int^t_0 Y- Y_n dW\Big) + E \Big(\int^t_0 X - X_n dW \cdot \int^t_0 Y_n dW\Big)\\
+& + E \Big(\int^t_0 X_n dW \cdot \int^t_0 Y- Y_n dW\Big) + E \Big(\int^t_0 X_n dW \cdot \int^t_0 Y_n dW\Big)\\
+& \leq \Big[  E \Big(\ub{\int^t_0 X - X_n d W}_{\to 0}\Big)^2 E\Big( \ub{\int^t_0 Y- Y_n dW}_{\to 0}\Big)^2\Big]^{1/2}\\
+& + \Big[  E \Big(\ub{\int^t_0 X - X_n d W}_{\to 0}\Big)^2 E\Big( \ub{\int^t_0 Y_n dW}_{\to E(\int^t_0 Y dW)^2}\Big)^2\Big]^{1/2} \\
+& + E\int^t_0 X_n Y_n ds \\
+\end{align*}
+
+\begin{align*} E\Big(\int^t_0 X\cdot Y ds \Big) & = E\Big(\int^t_0 (X- X_n + X_n)(Y-Y-n + Y_n) ds \Big)\\
+& =E \int^t_0 (X- X_n)(Y - Y_n) ds + E \int^t_0 (X- X_n)( Y_n) ds + E \int^t_0 (X)(Y - Y_n) ds + E \int^t_0 X_n Y_n ds \\
+& \leq E\Big[ \Big( \int^t_0 (X-X_n)^2 )^{1/2} \Big( \int^t_0 (Y-Y_n)^2 )^{1/2} \Big] \leq \Big( E \int^t_0 (X-X_n)^2 ds \Big)^{1/2} \Big( E \int^t_0 (Y-Y_n)^2 ds \Big)^{1/2}
+\end{align*}
+And both thus converge to the same result $E(\int^t_0 X dW \int^t_0 Y dW)$ \newline
+Furthermore, since
+\begin{align*} E[(\int^t_0 X dW)^2 - \int^t_0 X^2 du | \F_s] & = E[(\int^t_0 X dW + \int^t_0 X dW)^2 - \int^s_0 X^2 du - \int^t_s X^2 du| \F_s] \\
+& = (\int^s_0 X dW)^2 - \int^s_0 X^2 du + \ub{E[(\int^t_s X dW)^2 - \int^t_s X^2 du | \F_s]}_{=0 by III.14} \\
+&+ \ub{E[\int^s_0 X dW \cdot \int^t_s X dW | \F_s] }_{= \int^s_0 X W \cdot E[\int^t_0 X dW - \int^s_0 X dW | \F_s] = 0 as}
+\end{align*}
+Since the last term is a $\F_t$-martingale. \newline
+
+For $\int X dW \int Y dW - \int XY ds$ it is a similar proof. QED \newline
+
+We already know that $dW$ has no pathwise interpretation. So for example $\int^t_0 X_s (\omega) dW_s(\omega)$ is not defined in the Stieltjes sense. $\int X dW$ is defined as the $L_2$ limit in $CM_2(\F_t)$. But the integral does have some pathwise proeprties. \newline
+\textbf{Stochastic interval} $[\sigma, \tau]$ i.e. $\{(\omega, s), \sigma(\omega) \leq s \leq \tau(\omega) \}$ if $\sigma \leq \tau$ \newline
+PICTURE: Of a representation. The x-axis is $\Omega$, y-axis is $\R$, $\tau(\omega)$ and $\sigma(\omega)$ thus have some ``paths''. \newline
+$I_{[\sigma, \tau]}$ indicator of this stochastic interval. The indicator is not a simple process, it'd only be simple of $\tau, \sigma$ are discrete. \newline
+However,$I_{[\sigma, \tau]}$ IS an $L_2$ process. Take $X_s = I_{[\sigma, \tau]} (s)$
+$$\{ \omega: X_s(\omega) = 1 \} = \{\omega : \sigma(\omega) \leq s \} \cap \{ \omega: \tau(\omega) \geq s \} = [\sigma\leq s] \cap [\tau < s]^C \in \F_s$$
+$X$ is $\F_t$-adapted $\Rightarrow \F_t$-progressively measurable. $X_s = I_{[s \leq \tau]} - I_{[s < \sigma]}$
+$$E\int^t_0 \ub{X_s^2}_{I_{[\sigma \leq s \leq \tau]}} ds = E(\tau\wedge t - \sigma \wedge t) \leq t < \infty \quad \forall t \geq 0$$ \;
+
+\note{Theorem III.16}: Let $0\leq \sigma\leq \tau< \infty$ be $\F_t$-stopping times. Then 
+$$\int^t_0 I_{[\sigma, \tau]} (s) dW_s = W_{\tau \wedge t} - W_{\sigma \wedge t} \; a.s.$$
+\note{Proof}: We need to approximate $I_{[\sigma, \tau]}$ by SIMPLE processes and calculate the Ito integral.\newline
+We will partition $t_i = \frac i {2^n}, i=0,1,\dots$. And we will take the values always on the right of the interval where the stopping time falls. Thus we have $t_{i-1} < \sigma \leq t_{i}$ and $t_{j-1} < \tau \leq t_{j}$, thus the approximation of $I_{[\sigma, \tau]}(\omega)$ is the indicator of $I_{(t_i, t_j]}$. Denote our approximation $X_n$
+$$E\int^t_0 (\ub{I_{[\sigma, \tau]}- X_n)^2}_{=1\text{ on }[\sigma, t_i] \cup (\tau, t_j]} ds \leq 2\cdot 2^{-n} \to 0$$
+Thus $m(\int X_n dW, \int I_{[\sigma, \tau]} dW) \to 0$.
+$$\int^t_0 X_n dW = \sum^{k-1}_{i=0} \xi_i (W_{t_{i+1}} - W_{t_i}) + \xi_k (W_t - W_{t_k})$$
+Where $\xi_i = 1$ if $ \sigma \leq t_i$ and $\tau > t_i$, or if $t_{i-1} < \tau \leq t_i$. This gives us
+$$= W_{t_j \wedge t} - W_{t_i \wedge t} \text{ where } t_{i-1} < \sigma \leq t_i\text{ and } t_{j-1} < \tau \leq t_j$$
+So now we want to know that
+$$E [(W_{t_j \wedge t} - W_{t_i \wedge t}) - (W_{\tau \wedge t} - W_{\sigma \wedge t} )]^2 \stackrel ?\to 0$$
+$$=E[(W_{t_j\wedge t} - W_{\tau\wedge t}) + (W_{\sigma \wedge t} - W_{t_i \wedge t})]^2 \leq 2 E[(W_{t_j \wedge t} - W_{\tau \wedge t})^2] + 2 E[(W_{\sigma \wedge t} - W_{t_i \wedge t})^2]$$
+By continuity of $W$ both of the terms on the right go to zero. Because we have $t< \infty$ we get uniform integrability of sumartingales $(W_{\sigma \wedge t} - W_{t_i \wedge t})^2$. QED \newline
+
+\note{Corollary III.17} Let $X \in L_2(\F_t)$ and $\tau$ be $\F_t$-stopping time such that $X_s = 0$ for almost all $s\leq \tau$ (i.e. $X_s(\omega) \as= 0 $ for almost all $s\leq \tau(\omega)$ $\forall \omega$). Then 
+$$\int^t_0 X dW \as= 0 \text{ for almost all }t\leq \tau$$
+i.e. almost surely it holds that $\int^t_0 X dW (\omega) = 0$ for almost all $t\leq \tau(\omega)$ \newline
+
+\note{Corollary III.18} Let $\sigma \leq \tau < \infty$ be $\F_t$-stopping times and $Z$ be $\F_\sigma$-measurable and $EZ^2<\infty$. Then 
+$$ \int^t_0 Z \cdot I_{[\sigma, \tau]} dW \as= Z\cdot (W_{\tau \wedge t} - W_{\sigma \wedge t}) $$ \newline
+
+Last part of this chapter will be a generalisation of the Doob-Meyer decomposition. We know that the decomposition works for $M$ bounded martingale. Then there exists $\covar M$ and $M^2 - \covar M$ is martingale. We will not prove the following theorem. \newline
+\note{Theorem III.19}: Let $M$ be a $CM_2(\F_t)$-process. Then there exists its quadratic variation $\covar M$ and $M^2 - \covar M$ is continuous $\F_t$-martingale. Moreover $\covar M$ is unique increasing process starting at $0$ such that $M^2 - \covar M$ is a martingale. \newline
+
+\note{Corollary III.20}:  From III.15, III.19 it follows that 
+$$\covar {\int X dW}_t = \int^t_0 X^2 ds \text{ for } X \in L_2(\F_t)$$
+and
+$$\covar {\int X_1 dW, \int X_2 dW}_t = \int^t_0 X_1 X_2 ds \text{ for } X_1, X_2 \int L_2(\F_t)$$
+
+\note{Corollary III.21}: For $M \in CM_2(\F_t)$ and $\tau$ and $\F_t$-stopping time we have
+$$\covar {M^\tau} \as= \covar M^\tau $$
+\note{Proof}: $M^\tau \in CM_2(\F_t)$ gives us that $M^2 - \covar M$ is margingale and also $(M^\tau)^2 - \covar {M^\tau}$ is martingale. Also $(M^2 - \covar M)^\tau = (M^2)^\tau - \covar M^\tau$ is a martingale. We also get $(M^2)^\tau = (M^\tau)^2$ and thus $\covar {M^\tau} - \covar M^\tau \as = 0$ by the uniqueness of the D-M decomposition.
+
+\subsection*{Lecture 15 (18.4)}
+\section{ Ito Formula}
+$$X_t = X_0 + \int^t_0 B_t \; dW_t \quad B \in L_2(\F_t)$$
+Where $X_0$ is $\F_0$-measurable, $EX^2_0< \infty$ \newline
+Stochastic differential - $X$ has a stochastic differential 
+$$dX_t = B_t \; dW_t$$
+there there exists a $\F_0$-measurable $X_0$, $EX^2_0 < \infty$ such that $X_t \as = X_0 = \int^t_0 B_s \; dW_s$. \newline
+$A \in L_1(\F_t) = \{ \F_t-$progressive processes, $E\int^t_0 |A_s| ds < \infty \; \forall t \geq 0 \}$ \newline
+$X_t = X_0 + \int^t_0 A_s \; ds + \int^t_0 B_s \; dW_s$ \newline
+
+We have the classic chain rule of the form
+$$[\phi(\gamma(s)]' = \phi'(\gamma(s)) \cdot \gamma'(s)$$
+If $f$ is ``nice'' and $X$ has the stochastic differential $dX_t$, what is the stochastic differential of $f(X)$? \newline
+If $f\in C^2(\R)$
+$$f(x) = f(x_0) + f'(x_0) (x-x_0) + \frac 12 f''(x_0) (x-x_0)^2 + R$$
+$$f(x) = \sum^{n-1}_{i=0} f(x_{i+1}) - f(x_i) = \sum^{n-1}_{i=1} f'(x_i) (x_{i+1} - x_i) + \frac 12 \sum^{n-1}_{i=0}f''(x_i)(x_{i+1} - x_i)^2 + R$$
+So in classical analysis we have the form
+$$f(x) - f(x_0) = \int^x_{x_0} f'(y) \; dy$$
+But we will see that in the stochastic setting we need the second derivative, too. \newline
+
+\note{Theorem IV.1}: (Ito formula I): Let $f\in C^2(\R)$, let $X$ be a process
+$$X_t = X_0 + \int^t_0 G_s \; dW_s$$
+where $X_0$ is $\F_0$-mesurable, $EX^2_0 <\infty$, $G\in L_2(\F_t)$ and $W$ is an $\F_t$-Wiener process. Then
+\begin{align*}  df(X_t) & \as = f'(X_t) d\; X_t + \frac 12 f''(X_0) d\langle X \rangle_t\\
+& =f'(X_t) G_t \; dW_t + \frac 12f'' (X_t) G^2_s ds
+\end{align*}
+or in the integral form
+$$f(X_t) \as = f(X_0) + \int^t_0 f'(X_s) G_s dW_s + \frac 12 \int^t_0 f'' (X_s) G^2_s ds$$
+But the problem is with $\int^t_0 f'(X_s) G_s dW_s$ which is not necessarily $\in L_2(\F_t)$. This may be solved, as we'll see later, by localisation. For now, we will assume $E\int^t_0 (f'(X_s) G_s)^2 ds < \infty$. \newline
+\note{Proof}: $f(X_t) - f(X_0) = \sum^{n-1}_{i=0} f(X_{t_{i+1}}) - f(X_{t_i}) \{0=t_0 < t_1 < \cdot < t_n = t\}$, e.g. 
+$$=\sum^{n-1}_{i=0} f'(X_{t_i}) (X_{t_{i+1}} - X_{t_{i}}) + \frac 12 \sum^{n-1}_{i=0} f''(\eta_i)(X_{t_{i+1}} - X_{t_{i}})^2$$
+where $\eta_i$ is in between $X_{t_{i}}$ and $X_{t_{i+1}}$.\newline
+Define 
+\begin{align*} \tau_N &= 0\text{ if }|X_0| > N\\ & = \inf \{t |\int^t_0 G \; dW| \geq N \text{ or } \int^t_0 G^2_s ds \geq N \} \text{ if} |X_0| \leq N \\
+&=\infty \text{ elsewhere}
+\end{align*}
+$\tau_N$ is $\F_t$-stopping time, $\tau_N \nearrow \infty$ a.s. \newline
+$Y = X^{\tau_N} \cdot I_{[\tau_N > 0]}$, $|Y| \leq 2N$, $X_t = X_0 + \int^t_0 G_s \; dW_s$ (this is the technique called localisation). And lastly $X_t \as = \lim_{N\to \infty} Y^N_T \; \forall t$ \newline
+For now, though, fix $N$. Note that $f(Y), f'(Y), f'''(Y)$ are all bounded on $[-2N, 2N]$. Take $\Delta = \{0 =t_0 < t_1 < \cdots < t_n = t\}$, $t$ fixed and
+ $$J_1(\Delta) = \sum^{n-1}_{i=0} f'(X_{t_i}) (X_{t_{i+1}} - X_{t_i})$$
+and $|X| \leq 2N$, $|f(X)| \leq K, |f'(X)| \leq K, |f''(X)| \leq K$ and we want to show
+$$J_1(\Delta) \stackrel P\to \int^t_0 f'(X_s) dX_s = \int^t_0 f'(X_s) G_s dW_s$$
+Now
+$$X_{t_{i+1}} - X_{t_i} = \int^{t_{i+1}}_{t_i} G_s \; dW_s$$
+define $f'_\Delta(s) = f'(X_0) \cdot I_{(s=0}) + \sum^{n-1}_{i=0} f'(X_{t_i}) \cdot I_{[t_i < s \leq t_{i+1}]}$ and $f'_\Delta$ is a bounded simple process.
+$$\int^t_0 f'_\Delta (s) G_s dW_s = J_1(\Delta)$$
+\begin{align*} 
+E \Big( &\int^t_0 f'_\Delta(s) Gs dW_s - \int^t_0 f'(X_s) G_s \; dW_s \Big)^2 \\
+&= E\Big( \int^t_0 [f'_\Delta (s) - f'(X_s)] G_s dW_s \Big)^2\\
+&= E \int^t_0 (\ub{f'_\Delta(s) - f'(X_s)}_{\to 0})^2 G_s ^2 ds \;\;\;\text{ $f'$ is continuous, $X$ is continuous.} \\
+& = E \sum^{n-1}_{i=0} \int^{t_{i+1}}_{t_i} \ub{(\ub{f'(X_{t_i}) - f'(X_s)}_{\to 0})^2 G^2_s}_{\leq 4\cdot K^2 \cdot G^2_s \text{ integrable}} ds 	
+\end{align*}
+and thus
+$$\Rightarrow E(J_1(\Delta) - \int^t_0 f'(X_s) G_s \; dW_s)^2 \to 0$$
+Now, we have 
+$$J_2(\Delta) := \frac 12 \sum^{n-1}_{i=0} f''(\eta_i)(X_{t_{i+1}} - X_{t_{i}})^2$$
+where $\eta_i$ is in between $X_{t_{i}}$ and $X_{t_{i+1}}$.  \newline
+
+Replace $J_2(\Delta)$ by 
+$$J^*_2(\Delta) := \frac 12 \sum^{n-1}_{i=0} f''(X_{t_i})(X_{t_{i+1}} - X_{t_{i}})^2$$
+and we know $| f'' (X_{t_i} - f'' (\eta_i)| \to 0$ since it is $\leq 4k^2$. Furthermore
+$$E|J_2(\Delta - J^*_2(\Delta)| \leq \frac 12 E \Big(\sum^{n-1}_{i=0} |f'' (\eta_i) - f'' (X_{t_i}) | (X_{t_{i-1}} - X_{t_i})^2)$$
+$$\leq E\Big[\max_i | f'' (\eta_i) - f'' (X_{t_i})| \cdot \sum^{n-1}_{i=0} (X_{t_{i+1}} - X_{t_i})^2 \Big]$$
+$$\Big( E\max \ub{(f'' (\eta_i) - f'' (X_{t_i}))^2}_{bounded\; \to 0} \Big)^{1/2} \cdot \Big( E \Big(\sum^{n-1}_{i=0} (X_{t_{i+1}} - X_{t_i})^2 \Big)^2 \Big)^{1/2} \to 0$$
+Because the second term is bounded uniformly from the proof of III.3, where it is $E(V^2_\Delta (X,t))^2$. So we have
+$$E|J_2(\Delta) - J^*_2(\Delta)| \to 0$$
+Lastly we take
+$$J_3(\Delta) = \frac 12 \sum^{n-1}_{i=0} f'' (X_{t_i}) (\langle X \rangle_{t_{i+1}} - \langle X \rangle_{t_i} ) = \frac 12 \sum^{n-1}_{i=0} f'' (X_{t_i}) \cdot \int^{t_{i+1}}_{t_i} G^2_s \; ds$$
+and we want to find
+$$2 E(J^*_2 (\Delta) - J_3(\Delta))^2 = E \Big[ \sum^{n-1}_{i=0} \ub{f'' (X_{t_i})}_{\F_{t_i}-\text{measurable}} \cdot \Big(\int^{t_{i+1}}_{t_i} \ub{G^2_s}_{inc of \langle X \rangle} ds - (\ub{X_{t_{i+1}} - X_{t_i}}_{square inc. of bounded L_2 martingale})^2 \Big) \Big]^2$$
+We know already for square integrable martingles about the orthogonality, i.e. $E[(M_t - M_s)^2| \F_s] = E[M_t^2 - M_s^2 | \F_s]$ and $E[(M_t- M_s)(M_s - M_u)] = 0$ for $u\leq s \leq t$  \newline
+So we get
+$$2 E(J^*_2 (\Delta) - J_3(\Delta))^2 = E \sum^{n-1}_{i=0} \ub{(f'' (X_{t_i}))^2}_{\leq K^2} \cdot \Big(\int^{t_{i+1}}_{t_i} G^2_s ds - (X_{t_{i+1}} - X_{t_i})^2\Big)^2$$
+ $$\leq K^2 E \sum^{n-1}_{i=0} \Big ( \int^{t_{i+1}}_{t_i} G^2_s ds - (X_{t_{i+1}} - X_{t_i})^2 \Big)^2 \leq 2K^2 \sum^{n-1}_{i=0} \Big( E \Big( \int^{t_{i+1}}_{t_i} G^2_s ds \Big)^2 + E\ub{\Big( \int^{t_{i+1}}_{t_i} G_s dW_s)^4}_{(X_{t_{i+1}} - X_{t_i})^4} \Big)$$
+The first term
+$$E \sum^{n-1}_{i=0} \Big(\int^{t_{i+1}}_{t_i} G^2_s ds \Big)^2 \leq E \ub{\max_i \int^{t_{i+1}}_{t_i} G^2_s ds}_{<2N, \to 0} \cdot \ub{\sum^{n-1}_{i=0} \int^{t_{i+1}}_{t_i} G^2_s ds}_{\int^t_0 G^2_s} \to 0$$
+The second term
+$$E\sum^{n-1}_{i=0} \Big(\int^{t_{i+1}}_{t_i} G^2_s dW_s\Big)^4 \leq E \max_i \Big( \int^{t_{i+1}}_{t_i} G^2_s dW_s\Big)^2 \cdot V^2_\Delta(X,t) \leq \Big( E \max (\int^{t_{i+1}}_{t_i} G^2_s dW_s)^4\Big)^{1/2} \cdot \Big[E(V^2_\Delta(X, t))^2 \Big]^{1/2}$$
+Which is $\to 0 \cdot bounded$ as in the proof of III.3. \newline
+Altogether we have
+$$E|J_3(\Delta) - \frac 12 \int^t_0 f''(X_s) G^2_s ds| = E [ \frac 12 \sum^{n-1}_{i=0} \int^{t_{i+1}}_{t_i} (\ub{f''(X_{t_i}) - f'' (X_s)}_{bounded \to 0}) G^2s ds ] \to 0$$
+And thus we have
+$$J_2(\Delta) \stackrel P\to \int^t_0 f'' (X_s) G^2s ds$$
+meaning
+$$f(X_t) \as = f(X_0) + \int^t_0 f'(X_s) \ub{Gs dW_s}_{dX_s} + \frac 12 \int^t_0 f'' (X_s) \ub{G^2s ds}_{d \langle X \rangle_s}$$
+QED \newline
+
+\note{Example} $W$, $f(x) = x^2$, $f'(x) = 2x$, $f''(x) = 2$
+$$d\langle W \rangle = dt$$
+$$dW^2_t = 2W_t dW_t + \frac 12 \cdot 2 dt$$
+$$W^2_t = 2 \int^t_0 W_s dW_s + t$$
+Also
+$$\ub{\int^t_0 W_s dW_s}_{\text{martingale}} = \ub{\frac 12 W^2_t - t/2}_{\text{martingale}}$$
+
+\subsection*{Lecture 16 (19.4)}
+Yesterday we've done Ito formula, today we will generalize it to more dimensions, but without proof.\newline
+\note{Theorem IV.2}: Let $X,Y$ be processes with stochastic differential
+\begin{align*}dX_t &= A_{1,t} \; dt + B_{1,t}\; dW_t \\
+dY_t & = A_{2,t} \; dt + B_{2,t} \; dW_t
+\end{align*}
+Let $f: \R^+ \times \R^2 \to \R$ which is twice continuously differentiable, i.e.
+$$\frac{\partial}{\partial t} f(t,x,y), \frac{\partial}{\partial x} f(t,x,y), \frac{\partial}{\partial y} f(t,x,y), \frac{\partial^2}{\partial t^2}f(t,x,y), \frac{\partial^2}{\partial y^2} f(t,x,y), \frac{\partial^2}{\partial x \partial y} = \frac{\partial^2}{\partial y \partial x} f(t,x,y)$$
+exist and are continuous, then
+\begin{align*}df(t,X_t, Y_t) &= \frac{\partial}{\partial t} f(t, X_t, Y_t) \;dt + \frac{\partial}{\partial_x} f(t,X_t, Y_t) \;dX_t + \frac{\partial }{\partial y} f(t, X_t, Y_t) \; dY_t \\
+& + \frac 12 \frac{\partial^2}{\partial x^2} f(t, X_t, Y_t) \; d\langle X\rangle_t + \frac 12 \frac{\partial^2}{\partial y^2} f(t,X_t, Y_t) \; d\langle Y\rangle_t \\
+&+ \frac{\partial^2}{\partial x \partial y} f(t, X_t, Y_t) \; d\langle X, Y \rangle_t
+\end{align*}
+where
+$$\langle X \rangle_t= \int^t_0 B_{1,s}^2 \;ds \quad d\langle X \rangle_t = B^2_{1,t} \; dt$$
+$$\langle X,Y \rangle_t= \int^t_0 B_{1,s} B_{2,s} \;ds \quad d\langle X,Y \rangle_t = B_{1,t} \cdot B_{2,t} \; dt$$
+\begin{align*}\Rightarrow df(t,X_t, Y_t) &= \Big( \frac{\partial}{\partial t} f(t,X,Y) +\frac{\partial}{\partial x} f(t,X,Y) A_{1,t} + \frac{\partial}{\partial y} f(t,X,Y) A_{2,t} \\
+&+ \frac 12 \frac{\partial^2}{\partial x^2} f(t,X,Y) B^2_{1,t} + \frac 12 \frac{\partial^2}{\partial y^2} f(t,X,Y) B^2_{2,t} + + \frac 12 \frac{\partial^2}{\partial x\partial y} f(t,X,Y) B_{1,t} B_{2,t} \Big) \;dt \\
+&+\Big( \frac{\partial}{\partial x} f(t,X,Y) B_{1,t} + \frac{\partial}{\partial y} f(t,X,Y) B_{2,t} \Big) \; dW_t
+\end{align*}
+
+\note{Remark}: If
+\begin{align*} dX_t & = A_{1,t} \; dt + B_{1,t} \; dW_{1,t} \\
+dY_t & = A_{2,t} dt + B_{2,t} dW_{2,t}
+\end{align*}
+where $W_1 \bot W_2 \Rightarrow \langle W_1, W_2 \rangle_t = 0$ and
+$$df(t,X_t, Y_t) = \dots + \frac{\partial}{\partial x}f(t,X,Y) B_{1,t} dW_{1,t} + \frac{\partial}{\partial y}f(t,X,Y) B_{2,t} dW_{2,t}$$
+if they are driven by two independent Wiener processes, we get no terms $\frac{\partial^2}{\partial x \partial y}$ \newline 
+
+\note{Remark} Looking at the individual terms. We start with
+$$dX_t = \cdot \;dt + \cdot \; dW_t$$
+and get
+$$df(t,X) = \otimes \; dt + \otimes dW_t$$
+In integral form we have
+$$X_t + X_0 + \ub{\int^t_0 \cdot \; ds}_{fin. variation proc.} + \ub{\int^t_0 \cdot \; dW_s}_{martingale}$$
+and we have
+$$f(t, X_t) = f(0 , X_0) + \int^t_0 \otimes \; ds + \int^t_0 \otimes \; dW_t$$
+If the second term is $\in L_2$ then we know that it is a martingale. If the first term is integrable, then we have a finite variation process.\newline
+So the structure is the same. But what will happen, if the second term ins't in $L_2$? For example if
+$$E\int^t_0 (f''(X_s) \cdot B_s)^2 \; ds = \infty$$
+(this can easily happen!) but from the continuity of $f''(X_s)$ it holds that $f''(X_s)$ is pathwise locally bounded and we have
+$$P\Big(\int^t_0 (f'' (X_s) B_s)^2 ds < \infty \Big) = 1$$
+This will lead us to a definition of the so-called local martingales. \newline
+
+\note{Definition IV.3}: A continuous $\F_t$-adapted process $L= \{L_t, t\geq 0\}$ is called a \textbf{continuous local $\F_t$-martingale} ($CM_{loc}(\F_t)$) if there exists a seqeuence of $\F_t$-stopping times $\{\tau_n\}$ such that $\tau_n \nearrow \infty$ a.s. and 
+$$L^{\tau_n} \cdot I_{[\tau_n > 0]} = \{L_{\tau_n \wedge t} \cdot I_{[\tau_n>0]}, t\geq 0\}$$
+is an $\F_t$-martingale. $\{\tau_n\}$ is called the \textbf{localisation} of $L$. \newline
+
+So it doesn't have a finite expectation, but it does when we stop it at appropriate stopping times. We've seen this already in the proof of the last theorem. Of course, every martingale is a local martingale. Why? It is (i) $\F_t$-adapted, (ii) $E|M_t|<\infty \; \forall t\geq 0$, (iii) $E[M_t |\F_s] \as = M_s, s \leq t$ and we know all these work for ANY stopping times from chapter two. \newline
+
+Denote $P_2(\F_t) = \{X; \; \F_t\text{-progressively measurable}, \int^t_0 X^2_s \; ds < \infty\; a.s. \; \forall t \geq 0\}$. If $X$ is $\F_t$ adapted and continuous $\Rightarrow X\in P_2(\F_t)$, for any $t$ \newline
+
+\note{Theorem IV.4}: Let $X \in P_2(\F_t)$. Then there exists a sequence of $\F_t$-stopping times $\{\sigma_n\}$, $\sigma_n \nearrow \infty$ a.s. and $X_t \cdot I_{[\sigma_n \geq t ]} \in L_2(\F_t)$. \newline
+Clearly $X_t\cdot I_{[\sigma_n \geq t ]} \as\to X_t \; \forall t\geq 0$. \newline
+For example, $\sigma_n = \inf \{t: \int^t_0 X^2_s \; ds = n\}$
+Since $\int^t_0 X^2_s \; ds$ is continuous, $\F_t$-adapted and thus $\F_t$-stopping time. Furthemore
+$$\int^t_0 \Big(X_s \cdot I_{[\sigma_n \geq s]}\Big)^2 ds = \int^{t\wedge \sigma_n}_0 X^2_s ds \leq n \Rightarrow E\int^t_0 (X_S \cdot I_{[\sigma_n \geq s]})^2 ds \leq n < \infty \; \forall t \geq 0$$
+$\sigma \nearrow \infty: \forall t: P\Big(\int^t_0 X^2_s ds < \infty \Big) =1$
+$$P\Big(\bigcup^\infty_{n=1} \Big(\int^t_0 X^2_s ds \leq n \Big) \Big) = 1$$
+For fixed $t$ with probability 1 the integral $\int^t_0 X^2_s(\omega) ds \leq n(\omega)$ for some $n(\omega)$ \newline
+$\int^t_0 (X_s \cdot I_{[\sigma_n \geq s]}) dW_s$ is defined in Ito sense of $L_2$-stochastic integral martingale. \newline
+$$E\Big(\int^t_0 X_s I_{[\sigma_n \geq s]} dW_s)^2 = E\int^t_0 X^2_s \cdot I_{[\sigma_n \geq s]} ds \leq n$$
+There exists\footnote{proof later, maybe} a unique (up to modification) $L\in CM_{loc}(\F_t)$ such that 
+$$L^{\sigma_n} I_{[\sigma_n >0]} = \int X_t I_{[\sigma_n \geq n]} dW_t$$
+and we denote $L = \int X \; dW$, and for $X\in P_2(\F_t) \Rightarrow \int X dW$ is a continuous local martingle. \newline
+Back to Ito formula:
+$$dX_t = A_t dt + B_t dW_t \quad X_t = X_0 + \int^t_0 A_s ds + \int^t_0 B_s dW_s$$
+if there is $\tau_n\nearrow \infty$ sequence of $\F_t$-stopping times such that 
+$$E\Big|\int^{t\wedge \tau_n}_0 A_s ds \Big| < \infty, \quad E\int^{t\wedge \tau_n}_0 B^2s \;ds < \infty$$
+Then $$X^{\tau_n} \cdot I_{[\tau_n > 0]} = \ub{X_0 \cdot I_{[\tau_n>0]}}_{integrable} + \ub{\Big(\int^t_0 A_s ds \Big)^{\tau_n} \cdot I_{[\tau_n > 0]}}_{fin.var \; proc.} + \ub{\Big(\int^t_0 B_s dW_s\Big)^{\tau_n} \cdot I_{[\tau_n > 0]}}_{martingale}$$
+then $X$ is called $\F_t$-\textbf{semimartingale}. \newline
+$$f(X_t) = f(X_0) + \int^t_0 \Big(\ub{f'(X_s)}_{P_1} A_s + \frac 12 \ub{f''(X_s)}_{P_1}B^2_s) ds + \int^t_0 \ub{f'(X_s)}_{\in P_2(\F_t)} B_s dWs$$
+$f$ is twice cont. differentiable. Thus $f(X_t)$ is again a semimartingale.\newline
+
+\subsubsection*{Doob-Meyer decomposition for $CM_{loc}$}
+\note{Theorem IV.5} Let $L$ be a $CM_{loc}(\F_t)$. Then there exists a finite quadratic variation $\langle L\rangle$, which is an increasing process, $\langle L\rangle_0 = 0$ such that $L^2 - L$ is a continuous local martingale. \newline
+For Ito integral, $\big\langle \int X dW \big\rangle_t = \int^t_0 X^2_s ds$, where $X \in P_2(\F_T)$ \newline
+
+\note{Example} $L = \int^t_0 B dW$ a local mrtnigale, $dL = B_t \; dW_t$, $f(x) = x^2$
+$$df(L) = dL^2 = \frac 12 2 \cdot B^2_t dt + \ub{\int^t_0 2 LB dW}_{loc.\; mtg}$$
+$$\Big(\int^t_0 B \; dW\Big)^2 = \ub{\int^t_0 B^2_s ds}_{\langle \int B dW \rangle_t} + \int^t_0 2LB \; dW$$ 
+
+Recall that if $X$ is continuous and $\F_t$-adapted then it is already $X\in P_2(\F_t)$ Let us take $\Delta = \{0 = t_0 < t_1 < \cdots t_n = t\}$ a partition of $[0,t]$
+$$S_\Delta(X) = \sum^{n-1}_{i=0} X_{t_i} (W_{t_{i+1}} - W_{t_i}) $$
+\note{Theorem IV.6} $S_\Delta \stackrel P\to \int^t_0 X\; dW$ if $\|\Delta\| \to 0$ \newline
+\note{Proof}: Take $\tau_n = \inf \{ t : |X_t| \geq n \}$, we know that $\tau_n$ is $\F_t$-stopping since $X$ is continuous and the set is closed, also we have $\tau_n \nearrow \infty$ a.s.. \newline
+Take $Y = X^{\tau_N} \cdot I_{[\tau_N > 0]} \Rightarrow |Y|\leq N$ and $Y_t \to X_t$ a.s. as $n\to\infty$
+$$Y^{\Delta_s} = Y_0 \cdot I_{[s =0]} + \sum^{n-1}_{i=0} Y_{t_i} \cdot I_{[t_i < s \leq t_{i+1}]} \to Y_s \text{ as } \|\Delta\|\to 0$$
+$$E\Big(\int^t_0 \ub{Y}_{\in L_2} dW - \int^t_0 \ub{Y^\Delta}_{\in L_2} dW\Big)^2 = E(\int^t_0 (Y- Y^\Delta)^2 ds) \to 0$$
+and from that 
+$$\int^t_0 Y dW = P-\lim_{\|\Delta\|\to 0} \int^t_0 Y^\Delta dW$$
+and on the set $\{\omega: t \leq \tau_N(\omega)\}$ it holds
+$$\int^t_0 X dW = \int^t_0 Y dW = P-\lim \int^t_0 Y^\Delta dW = P-\lim \int^t_0 X^\Delta dW$$
+since $$P\Big[\bigcup^\infty_{N=n} t \leq \tau_N \Big] = 1 \; \forall t \Rightarrow \int^t_0 X dW = P-\lim \int^t_0 X^\Delta dW$$
+
+This is the so called Riemann interpretation of the Ito integral.
+
+\subsection*{Lecture 17 (25.4)}
+\section{Stochastic Differential Equations}
+$X=\{X_t, t\geq 0\}$, $X$ has stochastic differential
+$$dX_t = a(t, X_t) dt + b (t, X_t) dW_t$$
+if there is $X_0$ such that 
+$$X_t= X_0 + \int^t_0 a(s, X_s) ds + \int^t_0 b(s, X_s) dW_s \quad \text{(Ito diffusion)}$$
+
+Given $(\Omega, \F, (\F_t), P),$ $\F_t$-Wiener process $W, b, \sigma$, measurable, does there exists  stochastic process $X$ with stochastic differential
+$$dX_t = b(t,X_t)dt + \sigma(t, X_t) dW_t \quad (1)$$
+$X_0 = \xi, \xi$ is $\F_0$ measurable, may be the given inditial condition.\newline
+The answer is yes, for ``nice'' $b, \sigma, (\xi)$ \newline
+
+\note{Theorem V.1} Let $T>0$ be a fixed deterministic time. Let $b:[0,T]\times \R \to \R, \sigma:[0,T]\times \R \to \R$ be measurable, such that \begin{enumerate}
+\item $|b(t,x), b(t,y)| + |\sigma(t,x) - \sigma(t,y)| \leq K|x-y| \; \forall t \in [0,T]$ for all $t\in[0,T]$ and for some $K< \infty$ (locally Lipschitz continuous)
+\item $|b(t,x)|+ |\sigma(t,x)| \leq L(1+|x|)$ for all $t\in [0,T]$ and for some $L<\infty$ (locally linearly bounded growth)
+\end{enumerate}
+Let $\xi$ be independent on $W$ and $E\xi^2 < \infty$. Then there exists a unique (up to modfiication) solution to SDE
+$$dX_t = b(t, X_s) dt + \sigma(t, X_t) dW_t, \; X_0 = \xi \text{which is in }L_2([0,T], \F^W_t \vee \F^\xi)$$
+($\F^\xi = \xi^{-1}(\mathcal B)$) and $L_2([0,T], \F_t) = \{ X; X \text{ is } \F_t\text{-progresively measurable}, E\int^T_0 X^2_s ds < \infty \}$ \newline
+\note{Proof}:\textbf{Uniqueness}. Let $X^1, X^2$ be two different solutions.
+$$X^1_t = X_0 + \int^t_0 b(s, X_s^1) ds + \int^t_0 \sigma(s, X^1_s) dW_s$$
+then
+$$X^1_t - X^2_t = \int^t_0 b(s,X^1_s) - b(s,X^2_s) ds + \int^t_0 \sigma(s, X_s^1) - \sigma(s, X^2_s) dW_s$$
+$X^1, X^2 \in L_2 ([0,T])$ and $\sigma(s,x) \leq L(1+|x|)$ thus $\sigma(s, X^1_s), \sigma(s, X_s^2) \in L_2$
+\begin{align*}
+E(X_t^1 - X_t^2)^2 & \leq 2E\Big(\int^t_0 b(s, X^1_s) - b(s, X^2_s) ds \Big)^2 + 2E\Big(\int^t_0 \sigma(s, X^1_s) - \sigma(s, X^2_s) dW_s \Big)^2 \\
+&(\leq \Big(\int^t_0 1 \; ds \Big)^{1/2} \cdot \Big(\int^t_0( b(s, X^1_s) - b(s, X^2_s) )^2ds \Big)^{1/2} )\\
+& \leq 2E\Big(t \int^t_0 (b(s, X^1_s) - b(s, X^2_s))^2 ds \Big) + 2E \int^t_0 (\sigma(s, X^1_s) - \sigma(s, X^2_s))^2 ds \\
+& \stackrel {(i)}\leq 2tK^2 \int^t_0 E(X^1_s - X^2_s)^2 ds + 2K^2 \int^t_0 E(X^1_s - X^2_s)^2 ds\\
+& \leq 2K^2(T+1) \int^t_0 E(X_s^1 - X_s^2)^2 ds
+\end{align*}
+But also
+$$\ub{E(X^1_t - X^2_t)^2}_{f(t)} \leq \text{const}\cdot \int^t_0 E(X^1_s - X^2_s)^2 ds \quad \text{ and }\quad E(X^1_0 - X^2_0)^2 = 0$$
+$$f(t) \leq c\cdot \int^t_0 f(s) ds \text{ on }[0,T], f(0) = 0 \Rightarrow f(t) = 0 \text{ on }[0,T]$$
+from that we get 
+$$E(X^1_s - X^2_s)^2 = 0 \; \forall t \in [0,T] \Rightarrow X_t^1 \as = X_t^2$$
+
+\note{Existence}: We do this by an iteration solution. We take $X^0_t = \xi$
+$$X^1_t = X_0 + \int^t_0 b(s, X^0_s) ds + \int^t_0 \sigma(s,X^0_s) dW_s\quad t \in [0,T]$$
+Thus we put the previous term in the stochastic formula. Now the question is how far are they from each other.
+$$E(X^0_s)^2 = E\xi^2 < \infty \quad E\int^t_0 (X^0_s)^2 ds = t \cdot E\xi^2 < \infty$$
+Now we may repeat the same process as in uniqueness.
+$$E(X^1_t - X^0_s)^2 = E\Big(\int^t_0 b(s, \xi) ds + \int^t_0 \sigma(s, \xi) dW_s\Big)^2$$
+$$\leq 2E\Big(\int^t_0 b(s, \xi) ds \Big)^2 + 2E\Big(\int^t_0 \sigma(s, \xi) dW_s\Big)^2$$
+$$\leq 2t E\int^t_0 b^2(s,\xi) ds + 2E\int^t_0 \sigma^2(s, \xi) ds$$
+$$\stackrel{(ii)}\leq 4t L^2 \cdot E \int^t_0 (1+ \xi^2) ds + 4L^2 E\int^t_0 (1+ \xi^2) ds$$
+since
+$$b^2(s,\xi) \leq L^2 (1+ |\xi|)^2 \leq 2L^2(1+\xi^2)$$
+and the same for $\sigma$. And thus
+$$\leq 4t^2L^2 (1+ E\xi^2) + 4tL^2 (1+ E\xi^2) \leq 4t(t+1)L^2(1+E\xi^2) \leq Mt$$
+where $M$ is a finite constant $(M\geq 4(t+1)L^2(1+E\xi^2))$, so we have
+$$E(X^1_t - X^0_t)^2 \leq Mt$$
+From that we get $X^1 \in L_2([0,T])$ and thus 
+$$E\int^t_0 X^2_s ds = \int^t_0 EX^2_s ds < \infty$$
+
+Given $X^m \in L_2([0,T])$, define $$X^{m+1}_t = X_0 + \int^t_0 \ub{b(s, X^m_s)}_{|\cdot| \leq L(1+|X^m_s|)} ds + \int^t_0 \ub{\sigma(s, X^m_s)}_{|\cdot| \leq L(1+|X^m_s|)} dW_s$$
+We may again ask about
+$$E(X^{m+1}_t - X^m_t)^2 = E\Big(\int^t_0 b(s, X^m_s) - b(s, X^{m-1}_s) ds + \int^t_0 \sigma(s, X^m_s) - \sigma(s, X^{m-1}_s) dW_s \Big)^2$$
+$$\leq 2 E\Big(\int^t_0 b(s, X^m) - b(s, X^{m-1}) ds \Big)^2 + 2E\Big( \int^t_0 \sigma(s, X^m) - \sigma(s, X^{m-1}) dW \Big)^2$$
+$$ \leq 2\cdot t \cdot E \int^t_0 (b(s, X^m) - b(s, X^{m-1}))^2 ds + 2E\int^t_0 (\sigma(s,X^m) - \sigma(s, X^{m-1}))^2 ds$$
+$$\leq 2t \cdot E\int^t_0 K^2(X^m_s - X^{m-1}_s)^2 ds + 2E\int^t_0 K^2 (X^m_s - X^{m-1}_s)^2 ds$$
+$$=2(t+1) K^2 \int^t_0 E(X^m_s - X^{m-1}_s)^2 ds$$
+Altogether we obtain
+$$E(X^{m+1}_t - X^m_t)^2 \leq M\cdot \int^t_0 (X^m_s - X^{m-1}_s)^2 ds \text{ for some constant }M< \infty$$
+Where $M\geq 2(t+1)K^2)$ does not depend on $m$. We also know that $E(X^1_t - X^0_t)^2 \leq Mt$ and hence
+$$E(X^2_t - X^1_t)^2 \leq M \cdot \int^t_0 Ms \;ds = M^2 \frac{t^2}2$$
+$$E(X^3_t - X^2_t)^2 \leq M \cdot M \int^t_0 \frac{M^2 s^2}2 \;ds = M^3 \frac{t^3}{3!}$$
+$$\vdots$$
+$$E(X^{m+1}_t - X^m_t)^2 \leq M \cdot M \int^t_0 \frac{M^m s^m}{m!} \;ds = M^{m+1} \frac{t^{m+1}}{(m+1)!} < \infty$$
+We see that it should converge to zero. And since $X^m \in L_2([0,T])$ and $E(X^{m+1}_t - X^m_t)^2 \leq \text{const} < \infty$ we get $X^{m+1} \in L_2([0,T])$. \newline
+
+But this is still convergence at a given $t$ only. We shall now look at some form of uniform convergence.
+$$\sup_{0\leq t \leq T} (X^{m+1}_t - X^m_t)^2 \leq 2 \sup_{0 \leq t \leq T} \Big( \int^t_0 b(s, X^m) - b(s, X^{m-1}) ds \Big)^2 + 2\sup_{0\leq t \leq T} \Big( \int^t_0 \sigma(s, X^m) - \sigma(s, X^{m-1}) dW\Big)^2$$
+$$2TK^2 \sup_{0\leq t \leq T} \int^t_0 (X^m_s - X^{m-1}_s)^2 ds + 2\sup_{0\leq t \leq T} \Big(\int^t_0 \sigma(s, X^m) - \sigma(s, X^{m-1}) dW\Big)^2$$
+the second one is martingale - thus we can use the Doob inequality. (also note that the first integrand is positive, so the supremum must be attained at $T$)
+$$E\sup_{0\leq t \leq T} (X^{m+1}_t - X^m_s)^2 \leq 2 TK^2 \int^T_0 E(X^m_s - X^{m-1}_s)^2 ds + 2\cdot 4 \cdot K^2 \int^T_0 E(X^m_s - X^{m-1}_s)^2 ds$$
+where we used $(\sigma(s, X^m) - \sigma(s, X^{m-1}))^2 \leq K^2(X^m_s - X^{m-1})^2$ and we get
+$$\leq 2K^2(T+4)\int^T_0 \frac{M^m s^m}{m!} ds= 2K^2(T+4) M^m \frac{T^{m+1}}{(m+1)!} \leq c \cdot \frac{(MT)^{m+1}}{(m+1)!}$$
+for some $c< \infty$. From that we obtain
+$$P[\sup_{0\leq t \leq T} |X^{m+1}_t - X^m_t| \geq \frac 1{2^{m+1}} ] \leq 2^{2(m+1)}  c \cdot \frac{(MT)^{m+1}}{(m+1)!} = c \cdot \frac{(4MT)^{m+1}}{(m+1)!}$$
+And using Borel-Cantelli 0-1 law we get
+$$P[\sup_{0\leq t \leq T} |X^{m+1}_t - X^m_t| \geq \frac 1{2^{m+1}} \text{ for infinitely many m's}] = 0$$
+since
+$$\sum^\infty_{m=0} c \cdot \frac{(4MT)^{m+1}}{(m+1)!}=  c\cdot (e^{4MT} - 1) < \infty$$
+That means that for almost all $\omega$'s there exists some $m_0(\omega)$ such that $\forall m\geq m_0 (\omega)$ 
+$$\sup_{0\leq t \leq T} |X^{m+1}_t - X^m_t| \geq \frac 1{2^{m}}$$
+That means that
+$$\sup_{0\leq t \leq T} \sum^\infty_{m=k} |X^{m+1}_t - X^m_t| \as \to 0 \; k\to \infty$$
+$$X^K_t = X_0 + \sum^{K-1}_{m=0} X^{m+1}_t - X^m_t$$
+and we see that $X^K$ is a uniformly a.s. conergence sequence of continuous stochastic processes, that means there exists a continuous $X$, such that $X = \lim_{K\to \infty} X^K_t$ a.s.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
