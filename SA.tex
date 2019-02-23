@@ -1,6 +1,7 @@
 \documentclass[english]{article}
 
 \usepackage{amsmath, amssymb}
+\usepackage{amsthm}
 \usepackage{calc}
 
 \setlength{\textwidth}{6in}
@@ -9,22 +10,22 @@
 \setlength{\evensidemargin}{(\paperwidth - \textwidth)/2 - 1in}
 
 
-%Ciselne mnoziny
+% Ciselne mnoziny
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\RN}{\R^\N}
 
-%Fonty
+% Fonty
 \newcommand{\bd}[1]{\mathbf {#1}}
 \newcommand{\mb}[1]{\mathbb {#1}}
 \newcommand{\mc}[1]{\mathcal {#1}}
 
-%Zkraceni
+% Zkraceni
 \newcommand{\ub}{\underbrace}
 \newcommand{\bs}{\backslash}
 
-%Operace
+% Operace
 \newcommand{\inv}{^{-1}}
 \newcommand{\var}{\hspace{0.1em}\mathrm {var}\hspace{0.1em}}
 \newcommand{\cov}{\hspace{0.1em}\mathrm {cov}\hspace{0.1em}}
@@ -42,6 +43,20 @@
 \newcommand{\as}[1]{\stackrel {a.s.}{#1}}
 
 \newcommand{\covar}[1]{\langle {#1} \rangle }
+
+
+
+% Todonotes
+\usepackage{xargs}  % newcommandx
+\usepackage{xcolor} % todonotes colors
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+
+\newcommandx{\problem}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\todoo}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\comment}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=violet,backgroundcolor=violet!25,bordercolor=violet,#1]{#2}}
+
+
 
 \begin{document}
 \subsection*{Lecture 1 (22.2)}
@@ -204,7 +219,7 @@ $$E(X_t - X_s)^2 = |t-s|,\; \beta = 0$$
 $$E(X_t - X_s)^4 = 3(t-s)^2,\; \alpha = 4, \beta = 1$$
 that is ok, thus there (thanks to I.14) exists a continuous modification of $W$ which is called the Wiener process. Also thanks to 
 $$E(W_t -W_s)^{2k} = (2k-1)(2k-3) \cdots 3 \cdot (t-s)^k,\;\; \alpha = 2k, b= k-1, \; \frac{\beta}{\alpha} = \frac 12 - \frac 1{2k}\; \forall k$$
-We have the trajectories (paths) of $W$ being (locally?) $\gamma$-H�lder continuous for all $\gamma \in (0,1/2 )$\newline
+We have the trajectories (paths) of $W$ being (locally?) $\gamma$-H\"{o}lder continuous for all $\gamma \in (0,1/2 )$\newline
 
 For continuous processes we have distribution $P_X$ on $\B(C[0,\infty))$. We have $P_W$ on $\B(C[0,\infty))$ for which any finite-dimensional marginal is $N_n(0, (t_i \wedge t_j)^n_{i,j=1})$ \textbf{Wiener measure}.\newline
 Path regularity of Wiener process: $W(\omega)$ is a continuous function for (almost) all $\omega$. We have: \newline
